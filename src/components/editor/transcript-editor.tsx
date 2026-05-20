@@ -10,6 +10,7 @@ import {
   Clock3,
   Download,
   FileText,
+  LoaderCircle,
   MousePointer2,
   Pause,
   Play,
@@ -39,7 +40,6 @@ import {
   createBillingPortalSession,
   createCheckoutSession,
 } from "@/app/actions/billing";
-import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -67,6 +67,7 @@ const modelPauses = (samplePausePlan as { pauses: AutoPause[] }).pauses.map(
 const MAX_MANUAL_PAUSE_MS = 12000;
 const DRAG_MS_PER_PIXEL = 35;
 const NATURAL_GAP_HANDLE_THRESHOLD_MS = 350;
+const DEMO_AUDIO_FILE_NAME = "interaction-demo.mp3";
 const ORIGINAL_AUDIO_URL = "/audio/interaction-demo.mp3";
 const UNLOCK_MESSAGE_AUDIO_URL = "/audio/unlock-message.m4a";
 const ZERO_CROSSING_WINDOW_MS = 8;
@@ -91,6 +92,7 @@ export function TranscriptEditor({
   const [previewSignature, setPreviewSignature] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
   const [isExportGateOpen, setIsExportGateOpen] = useState(false);
+  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
   const [hasTweakedGaps, setHasTweakedGaps] = useState(false);
   const { isSignedIn } = useUser();
   const [currentTime, setCurrentTime] = useState(0);
@@ -124,6 +126,7 @@ export function TranscriptEditor({
         ? "ready"
         : "rendering";
   const isDemoContentLoaded = !uploadedFileName && sourceAudioUrl === ORIGINAL_AUDIO_URL;
+  const loadedAudioFileName = uploadedFileName ?? (isDemoContentLoaded ? DEMO_AUDIO_FILE_NAME : null);
   const primaryWorkflowStep =
     !isDemoContentLoaded && !uploadedFileName
       ? "demo"
@@ -308,7 +311,7 @@ export function TranscriptEditor({
     setSelectedWordIndex(null);
   }
 
-  function loadDemoContent() {
+  function clearAudioUrls() {
     if (uploadedAudioUrlRef.current) {
       URL.revokeObjectURL(uploadedAudioUrlRef.current);
       uploadedAudioUrlRef.current = null;
@@ -317,7 +320,10 @@ export function TranscriptEditor({
       URL.revokeObjectURL(previewObjectUrlRef.current);
       previewObjectUrlRef.current = null;
     }
+  }
 
+  function loadDemoContent() {
+    clearAudioUrls();
     originalAudioRef.current = null;
     pendingSeekTimeRef.current = null;
     setSourceAudioUrl(ORIGINAL_AUDIO_URL);
@@ -328,6 +334,22 @@ export function TranscriptEditor({
     setIsPlaying(false);
     setPreviewSignature("");
     applyAutoTiming();
+  }
+
+  function resetWorkspace() {
+    clearAudioUrls();
+    originalAudioRef.current = null;
+    pendingSeekTimeRef.current = null;
+    setSourceAudioUrl("");
+    setUploadedFileName(null);
+    setAudioUrl("");
+    setAudioDuration(0);
+    setCurrentTime(0);
+    setIsPlaying(false);
+    setPreviewSignature("");
+    setIsExportGateOpen(false);
+    setIsResetConfirmOpen(false);
+    clearTiming();
   }
 
   function setPauseDuration(afterWordIndex: number, durationMs: number) {
@@ -654,9 +676,9 @@ export function TranscriptEditor({
                 step="1"
                 icon={Upload}
                 label="Upload audio"
-                description={uploadedFileName ?? "Choose your own file"}
-                actionLabel={uploadedFileName ? "Change" : "Choose"}
-                complete={Boolean(uploadedFileName)}
+                description={loadedAudioFileName ?? "Choose your own file"}
+                actionLabel={loadedAudioFileName ? "Change" : "Choose"}
+                complete={Boolean(loadedAudioFileName)}
                 onClick={openUploadPicker}
               />
               <WorkflowStep
@@ -671,6 +693,7 @@ export function TranscriptEditor({
                 actionLabel={sortedPauses.length > 0 ? "Rerun" : "Run"}
                 complete={sortedPauses.length > 0}
                 primary={primaryWorkflowStep === "auto"}
+                disabled={!loadedAudioFileName}
                 onClick={applyAutoTiming}
               />
               <WorkflowStep
@@ -697,7 +720,7 @@ export function TranscriptEditor({
                     : "Render your finished audio"
                 }
                 actionLabel={previewState === "rendering" ? "Rendering" : "Export"}
-                disabled={previewState === "rendering"}
+                disabled={previewState === "rendering" || !loadedAudioFileName}
                 onClick={downloadCurrentAudio}
               />
             </div>
@@ -782,12 +805,12 @@ export function TranscriptEditor({
             ) : null}
 
             <Button
-              className="w-full justify-start border-destructive/35 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+              className="h-20 w-full justify-start border-destructive/35 px-3 text-destructive hover:bg-destructive/10 hover:text-destructive dark:hover:bg-destructive/20"
               variant="outline"
-              onClick={loadDemoContent}
+              onClick={() => setIsResetConfirmOpen(true)}
             >
               <RotateCcw className="size-4" />
-              Reload demo content
+              Reset everything
             </Button>
           </aside>
         </section>
@@ -800,7 +823,54 @@ export function TranscriptEditor({
           onExportPreview={downloadLimitedAudio}
         />
       ) : null}
+      {isResetConfirmOpen ? (
+        <ResetConfirmDialog
+          onCancel={() => setIsResetConfirmOpen(false)}
+          onConfirm={resetWorkspace}
+        />
+      ) : null}
     </main>
+  );
+}
+
+function ResetConfirmDialog({
+  onCancel,
+  onConfirm,
+}: {
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 px-4 backdrop-blur-sm">
+      <div
+        className="w-full max-w-sm rounded-md border bg-card p-5 text-card-foreground shadow-xl"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="reset-confirm-title"
+        aria-describedby="reset-confirm-description"
+      >
+        <div className="space-y-2">
+          <h2 id="reset-confirm-title" className="text-lg font-semibold">
+            Reset everything?
+          </h2>
+          <p
+            id="reset-confirm-description"
+            className="text-sm leading-6 text-muted-foreground"
+          >
+            This unloads the current audio, removes all timing, and clears your
+            current selection.
+          </p>
+        </div>
+        <div className="mt-5 flex justify-end gap-2">
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button type="button" variant="destructive" onClick={onConfirm}>
+            Reset
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -997,9 +1067,21 @@ function CustomPlayer({
           variant="outline"
           disabled={previewState === "rendering"}
           onClick={onTogglePlayback}
-          aria-label={isPlaying ? "Pause audio" : "Play audio"}
+          aria-label={
+            previewState === "rendering"
+              ? "Rendering audio"
+              : isPlaying
+                ? "Pause audio"
+                : "Play audio"
+          }
         >
-          {isPlaying ? <Square className="size-4" /> : <Play className="size-4" />}
+          {previewState === "rendering" ? (
+            <LoaderCircle className="size-4 animate-spin" />
+          ) : isPlaying ? (
+            <Square className="size-4" />
+          ) : (
+            <Play className="size-4" />
+          )}
         </Button>
         <div className="w-28 font-mono text-sm tabular-nums">
           {formatSeconds(currentTime)}
@@ -1039,13 +1121,6 @@ function CustomPlayer({
         <div className="w-24 text-right font-mono text-sm tabular-nums text-muted-foreground">
           {formatSeconds(safeDuration)}
         </div>
-        <Badge variant={previewState === "ready" ? "default" : "secondary"}>
-          {previewState === "rendering"
-            ? "rendering"
-            : previewState === "ready"
-              ? "preview"
-              : "original"}
-        </Badge>
       </div>
     </div>
   );
