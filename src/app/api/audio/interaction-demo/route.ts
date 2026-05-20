@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   const audioPath = path.resolve(
     process.cwd(),
-    "../../fixtures/audio/interaction-demo.mp3",
+    "public/audio/interaction-demo.mp3",
   );
   const audio = await readFile(audioPath);
 

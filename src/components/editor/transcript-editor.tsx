@@ -68,8 +68,8 @@ const modelPauses = (samplePausePlan as { pauses: AutoPause[] }).pauses.map(
 const MAX_MANUAL_PAUSE_MS = 12000;
 const DRAG_MS_PER_PIXEL = 35;
 const NATURAL_GAP_HANDLE_THRESHOLD_MS = 350;
-const ORIGINAL_AUDIO_URL = "/api/audio/interaction-demo";
-const UNLOCK_MESSAGE_AUDIO_URL = "/api/audio/unlock-message";
+const ORIGINAL_AUDIO_URL = "/audio/interaction-demo.mp3";
+const UNLOCK_MESSAGE_AUDIO_URL = "/audio/unlock-message.m4a";
 const ZERO_CROSSING_WINDOW_MS = 8;
 const FORWARD_BOUNDARY_MS = 150;
 const STABLE_SILENCE_MS = 60;
@@ -1334,6 +1334,9 @@ async function loadAudioFromUrl(
   }
 
   const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to load audio from ${url}: ${response.status}`);
+  }
   const encodedAudio = await response.arrayBuffer();
   const context = new AudioContext();
   try {
