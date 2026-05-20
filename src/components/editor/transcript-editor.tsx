@@ -3,8 +3,7 @@
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import type { DragEvent } from "react";
 import type { LucideIcon } from "lucide-react";
-import Link from "next/link";
-import { useUser, UserButton } from "@clerk/nextjs";
+import { SignInButton, SignUpButton, useUser, UserButton } from "@clerk/nextjs";
 import { upload as uploadBlob } from "@vercel/blob/client";
 import {
   AudioLines,
@@ -52,7 +51,7 @@ import {
   removeProviderApiKey,
   saveProviderApiKey,
 } from "@/app/actions/provider-keys";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -954,12 +953,11 @@ export function TranscriptEditor({
                   <UserButton />
                 </>
               ) : (
-                <Link
-                  href="/sign-in"
-                  className={buttonVariants({ variant: "outline" })}
-                >
-                  Sign in
-                </Link>
+                <SignInButton mode="modal">
+                  <Button type="button" variant="outline">
+                    Sign in
+                  </Button>
+                </SignInButton>
               )}
             </div>
           </div>
@@ -1847,21 +1845,16 @@ function ExportGate({
             </form>
           ) : (
             <>
-              <Link
-                href="/sign-up"
-                className={buttonVariants({ className: "w-full" })}
-              >
-                Create account to unlock
-              </Link>
-              <Link
-                href="/sign-in"
-                className={buttonVariants({
-                  variant: "outline",
-                  className: "w-full",
-                })}
-              >
-                Sign in
-              </Link>
+              <SignUpButton mode="modal">
+                <Button type="button" className="w-full">
+                  Create account to unlock
+                </Button>
+              </SignUpButton>
+              <SignInButton mode="modal">
+                <Button type="button" variant="outline" className="w-full">
+                  Sign in
+                </Button>
+              </SignInButton>
             </>
           )}
 
