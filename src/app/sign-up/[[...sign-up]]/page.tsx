@@ -1,6 +1,7 @@
 import { ClerkLoaded, ClerkLoading, SignUp } from "@clerk/nextjs";
-import { AudioLines } from "lucide-react";
 import Link from "next/link";
+
+import { AppLogo } from "@/components/app-logo";
 
 export default function SignUpPage() {
   return (
@@ -8,9 +9,7 @@ export default function SignUpPage() {
       <header className="border-b bg-background/95">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-4">
           <Link href="/" className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-md bg-emerald-600 text-white">
-              <AudioLines className="size-5" />
-            </div>
+            <AppLogo />
             <span className="text-xl font-semibold">The Pausefather</span>
           </Link>
           <Link className="text-sm font-medium text-muted-foreground hover:text-foreground" href="/">

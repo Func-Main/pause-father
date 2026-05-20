@@ -128,3 +128,17 @@
     @apply font-sans;
   }
 }
+
+@keyframes voicemark-logo-gradient-scroll {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-66.666%, 0, 0);
+  }
+}
+
+.voicemark-logo-gradient {
+  animation: voicemark-logo-gradient-scroll 24s ease-in-out infinite;
+}

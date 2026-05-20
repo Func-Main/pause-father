@@ -5,6 +5,7 @@ import type { DragEvent } from "react";
 import type { LucideIcon } from "lucide-react";
 import { useUser, UserButton } from "@clerk/nextjs";
 import { upload as uploadBlob } from "@vercel/blob/client";
+import { AppLogo } from "@/components/app-logo";
 import {
   AudioLines,
   AlertCircle,
@@ -920,9 +921,7 @@ export function TranscriptEditor({
         <header className="border-b bg-background/95">
           <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-md bg-emerald-600 text-white">
-                <AudioLines className="size-5" />
-              </div>
+              <AppLogo />
               <div>
                 <h1 className="text-xl font-semibold">The Pausefather</h1>
               </div>
