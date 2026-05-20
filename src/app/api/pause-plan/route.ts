@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { Pause, Transcript } from "@autopauser/engine-js";
+import { MAX_TRANSCRIPT_WORDS } from "@/lib/audio-limits";
 import { getDecryptedProviderApiKey } from "@/lib/user-provider-keys/repository";
 
 type PausePlanResponse = {
@@ -30,6 +31,15 @@ export async function POST(request: Request) {
 
   if (!transcript || !Array.isArray(transcript.words)) {
     return NextResponse.json({ error: "Missing transcript." }, { status: 400 });
+  }
+
+  if (transcript.words.length > MAX_TRANSCRIPT_WORDS) {
+    return NextResponse.json(
+      {
+        error: `Auto timing supports transcripts up to ${MAX_TRANSCRIPT_WORDS.toLocaleString()} words.`,
+      },
+      { status: 413 },
+    );
   }
 
   const response = await fetch("https://api.openai.com/v1/responses", {
@@ -178,4 +188,3 @@ function normalizePauses(plan: PausePlanResponse, transcript: Transcript): Pause
     ];
   });
 }
-

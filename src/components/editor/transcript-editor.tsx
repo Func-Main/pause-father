@@ -1,14 +1,19 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import type { DragEvent } from "react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useUser, UserButton } from "@clerk/nextjs";
+import { upload as uploadBlob } from "@vercel/blob/client";
 import {
   AudioLines,
+  AlertCircle,
   Check,
   Clock3,
+  Crown,
   Download,
+  Code2,
   FileText,
   KeyRound,
   LoaderCircle,
@@ -64,6 +69,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { UserEntitlement } from "@/lib/billing/entitlements";
+import {
+  AUDIO_UPLOAD_ACCEPT,
+  audioContentTypeForFile,
+  formatUploadLimit,
+  isAllowedAudioFile,
+  MAX_AUDIO_UPLOAD_BYTES,
+  MAX_TRANSCRIPT_WORDS,
+} from "@/lib/audio-limits";
 import type {
   ApiKeyProvider,
   ProviderKeyStatus,
@@ -89,6 +102,8 @@ const SILENCE_THRESHOLD = 0.012;
 const PREVIEW_FADE_MS = 20;
 const ACTIVE_WORD_LOOKAHEAD_SECONDS = 0.035;
 const ACTIVE_WORD_GRACE_SECONDS = 0.08;
+const AUDIO_UPLOAD_MODE = process.env.NEXT_PUBLIC_AUDIO_UPLOAD_MODE ?? "blob";
+const SESSION_DRAFT_STORAGE_KEY = "pausefather:last-session:v1";
 
 export function TranscriptEditor({
   entitlement,
@@ -97,12 +112,12 @@ export function TranscriptEditor({
   entitlement: UserEntitlement;
   providerKeyStatuses: ProviderKeyStatus[];
 }) {
-  const [transcript, setTranscript] = useState<Transcript>(demoTranscript);
-  const [pauses, setPauses] = useState<AutoPause[]>(demoModelPauses);
+  const [transcript, setTranscript] = useState<Transcript>(emptyWorkspaceTranscript);
+  const [pauses, setPauses] = useState<AutoPause[]>([]);
   const [selectedWordIndex, setSelectedWordIndex] = useState<number | null>(null);
-  const [sourceAudioUrl, setSourceAudioUrl] = useState(ORIGINAL_AUDIO_URL);
+  const [sourceAudioUrl, setSourceAudioUrl] = useState("");
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
-  const [audioUrl, setAudioUrl] = useState(ORIGINAL_AUDIO_URL);
+  const [audioUrl, setAudioUrl] = useState("");
   const [previewSignature, setPreviewSignature] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
   const [isExportGateOpen, setIsExportGateOpen] = useState(false);
@@ -111,16 +126,23 @@ export function TranscriptEditor({
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [isAutoTiming, setIsAutoTiming] = useState(false);
   const [workflowMessage, setWorkflowMessage] = useState<string | null>(null);
+  const [isDraggingAudio, setIsDraggingAudio] = useState(false);
+  const [hasRestoredDraft, setHasRestoredDraft] = useState(false);
+  const [pendingTranscriptionBlob, setPendingTranscriptionBlob] = useState<{
+    url: string;
+    fileName: string;
+  } | null>(null);
   const [keyStatuses, setKeyStatuses] = useState(providerKeyStatuses);
   const [hasTweakedGaps, setHasTweakedGaps] = useState(false);
   const { isSignedIn } = useUser();
   const [currentTime, setCurrentTime] = useState(0);
-  const [audioDuration, setAudioDuration] = useState(Number(demoTranscript.duration ?? 0));
+  const [audioDuration, setAudioDuration] = useState(0);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
   const originalAudioRef = useRef<AudioBuffer | null>(null);
   const unlockMessageAudioRef = useRef<AudioBuffer | null>(null);
   const uploadedAudioUrlRef = useRef<string | null>(null);
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
+  const pendingDirectUploadFileRef = useRef<File | null>(null);
   const previewObjectUrlRef = useRef<string | null>(null);
   const pendingSeekTimeRef = useRef<number | null>(null);
   const manualEditIdRef = useRef(0);
@@ -146,9 +168,13 @@ export function TranscriptEditor({
         : "rendering";
   const isDemoContentLoaded = !uploadedFileName && sourceAudioUrl === ORIGINAL_AUDIO_URL;
   const loadedAudioFileName = uploadedFileName ?? (isDemoContentLoaded ? DEMO_AUDIO_FILE_NAME : null);
+  const isWorkspaceEmpty =
+    !loadedAudioFileName && !audioUrl && transcript.words.length === 0;
   const primaryWorkflowStep =
     !isDemoContentLoaded && !uploadedFileName
       ? "demo"
+      : transcript.words.length === 0
+        ? "transcribe"
       : sortedPauses.length === 0
         ? "auto"
         : "tweak";
@@ -156,6 +182,10 @@ export function TranscriptEditor({
     () => retimeTranscript(transcript, sortedPauses),
     [sortedPauses, transcript],
   );
+  const displayDuration =
+    sortedPauses.length > 0 || transcript.words.length > 0
+      ? Number(retimedTranscript.duration ?? audioDuration)
+      : audioDuration;
   const selectedPause =
     selectedWordIndex === null
       ? undefined
@@ -187,6 +217,102 @@ export function TranscriptEditor({
   const hasOpenAiKey = keyStatuses.some(
     (status) => status.provider === "openai" && status.hasKey,
   );
+  const workflowProgress = workingWorkflowProgressState({
+    isAutoTiming,
+    isTranscribing,
+  });
+  const workflowNotice = workflowMessage
+    ? workflowNoticeState({
+        message: workflowMessage,
+        pendingTranscriptionBlob,
+      })
+    : null;
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function restoreDraft() {
+      const draft = loadSessionDraft();
+
+      if (!draft) {
+        setHasRestoredDraft(true);
+        return;
+      }
+
+      const file = draft.source === "upload" ? await loadDraftAudioFile() : null;
+
+      if (isCancelled) {
+        return;
+      }
+
+      if (draft.source === "demo") {
+        setSourceAudioUrl(ORIGINAL_AUDIO_URL);
+        setAudioUrl(ORIGINAL_AUDIO_URL);
+        setUploadedFileName(null);
+      } else if (file) {
+        const nextUrl = URL.createObjectURL(file);
+        uploadedAudioUrlRef.current = nextUrl;
+        pendingDirectUploadFileRef.current = AUDIO_UPLOAD_MODE === "direct" ? file : null;
+        setSourceAudioUrl(nextUrl);
+        setAudioUrl(nextUrl);
+        setUploadedFileName(draft.uploadedFileName);
+      } else {
+        setUploadedFileName(draft.uploadedFileName);
+      }
+
+      setTranscript(draft.transcript);
+      setPauses(draft.pauses);
+      setAudioDuration(draft.audioDuration);
+      setHasTweakedGaps(draft.hasTweakedGaps);
+      setPendingTranscriptionBlob(draft.pendingTranscriptionBlob);
+      setWorkflowMessage(
+        draft.source === "demo"
+          ? "Recovered your demo session from this browser."
+          : file
+          ? "Recovered your last session from this browser."
+          : "Recovered transcript and pauses. Upload the audio again to preview or export.",
+      );
+      setHasRestoredDraft(true);
+    }
+
+    void restoreDraft();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!hasRestoredDraft) {
+      return;
+    }
+
+    const draft = currentSessionDraft({
+      audioDuration,
+      hasTweakedGaps,
+      isDemoContentLoaded,
+      pauses: sortedPauses,
+      pendingTranscriptionBlob,
+      transcript,
+      uploadedFileName,
+    });
+
+    if (!draft) {
+      clearSessionDraft();
+      return;
+    }
+
+    saveSessionDraft(draft);
+  }, [
+    audioDuration,
+    hasRestoredDraft,
+    hasTweakedGaps,
+    pendingTranscriptionBlob,
+    sortedPauses,
+    transcript,
+    uploadedFileName,
+    isDemoContentLoaded,
+  ]);
 
   useEffect(() => {
     let isCancelled = false;
@@ -297,7 +423,8 @@ export function TranscriptEditor({
     setSelectedWordIndex(null);
 
     if (isDemoContentLoaded) {
-      setPauses(demoModelPauses);
+      setPauses(freshDemoModelPauses());
+      setWorkflowMessage("Demo auto timing restored.");
       return;
     }
 
@@ -337,8 +464,55 @@ export function TranscriptEditor({
     uploadInputRef.current?.click();
   }
 
+  function handleAudioDragEnter(event: DragEvent<HTMLElement>) {
+    if (!dragEventHasFiles(event)) {
+      return;
+    }
+
+    event.preventDefault();
+    setIsDraggingAudio(true);
+  }
+
+  function handleAudioDragOver(event: DragEvent<HTMLElement>) {
+    if (!dragEventHasFiles(event)) {
+      return;
+    }
+
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
+    setIsDraggingAudio(true);
+  }
+
+  function handleAudioDragLeave(event: DragEvent<HTMLElement>) {
+    if (
+      event.currentTarget instanceof HTMLElement &&
+      event.relatedTarget instanceof Node &&
+      event.currentTarget.contains(event.relatedTarget)
+    ) {
+      return;
+    }
+
+    setIsDraggingAudio(false);
+  }
+
+  function handleAudioDrop(event: DragEvent<HTMLElement>) {
+    if (!dragEventHasFiles(event)) {
+      return;
+    }
+
+    event.preventDefault();
+    setIsDraggingAudio(false);
+    void uploadAudio(firstDroppedAudioFile(event));
+  }
+
   async function uploadAudio(file: File | undefined) {
     if (!file) {
+      return;
+    }
+
+    const uploadValidationError = validateSelectedAudioFile(file);
+    if (uploadValidationError) {
+      setWorkflowMessage(uploadValidationError);
       return;
     }
 
@@ -352,6 +526,8 @@ export function TranscriptEditor({
 
     const nextUrl = URL.createObjectURL(file);
     uploadedAudioUrlRef.current = nextUrl;
+    pendingDirectUploadFileRef.current = AUDIO_UPLOAD_MODE === "direct" ? file : null;
+    void saveDraftAudioFile(file);
     originalAudioRef.current = null;
     pendingSeekTimeRef.current = null;
     setSourceAudioUrl(nextUrl);
@@ -364,27 +540,70 @@ export function TranscriptEditor({
     setPreviewSignature("");
     setHasTweakedGaps(false);
     setWorkflowMessage(null);
-    setIsTranscribing(true);
+    setPendingTranscriptionBlob(null);
     clearTiming();
 
     try {
-      const formData = new FormData();
-      formData.set("file", file);
-      const response = await fetch("/api/transcribe", {
-        method: "POST",
-        body: formData,
-      });
-      const body = (await response.json()) as {
-        transcript?: Transcript;
-        error?: string;
-      };
-
-      if (!response.ok || !body.transcript) {
-        throw new Error(body.error ?? "Transcription failed.");
+      if (AUDIO_UPLOAD_MODE === "direct") {
+        setWorkflowMessage("Audio loaded. Transcribe it when you're ready.");
+        return;
       }
 
-      setTranscript(body.transcript);
-      setAudioDuration(Number(body.transcript.duration ?? 0));
+      const blob = await uploadBlob(blobPathForFile(file), file, {
+        access: "private",
+        contentType: audioContentTypeForFile(file),
+        handleUploadUrl: "/api/upload",
+      });
+      setPendingTranscriptionBlob({ url: blob.url, fileName: file.name });
+      setWorkflowMessage("Audio uploaded. Transcribe it when you're ready.");
+    } catch (error) {
+      setWorkflowMessage(
+        error instanceof Error
+          ? error.message
+          : "Upload failed. Check the audio file and try again.",
+      );
+    } finally {
+      setIsTranscribing(false);
+    }
+  }
+
+  async function transcribeUploadedAudio() {
+    if (!uploadedFileName) {
+      return;
+    }
+
+    if (!isSignedIn) {
+      window.location.href = "/sign-up";
+      return;
+    }
+
+    if (!hasElevenLabsKey) {
+      setIsSettingsOpen(true);
+      setWorkflowMessage("Add an ElevenLabs API key to transcribe uploaded audio.");
+      return;
+    }
+
+    setIsTranscribing(true);
+    setWorkflowMessage(null);
+
+    try {
+      if (AUDIO_UPLOAD_MODE === "direct") {
+        const file = pendingDirectUploadFileRef.current;
+        if (!file) {
+          throw new Error("Upload the audio again before transcribing.");
+        }
+        await transcribeDirectUpload(file);
+        return;
+      }
+
+      if (!pendingTranscriptionBlob) {
+        throw new Error("Upload the audio again before transcribing.");
+      }
+
+      await transcribeUploadedBlob(
+        pendingTranscriptionBlob.url,
+        pendingTranscriptionBlob.fileName,
+      );
     } catch (error) {
       setWorkflowMessage(
         error instanceof Error
@@ -394,6 +613,64 @@ export function TranscriptEditor({
     } finally {
       setIsTranscribing(false);
     }
+  }
+
+  async function transcribeDirectUpload(file: File) {
+    const formData = new FormData();
+    formData.set("file", file);
+    const response = await fetch("/api/transcribe", {
+      method: "POST",
+      body: formData,
+    });
+    await handleTranscriptionResponse(response);
+  }
+
+  async function transcribeUploadedBlob(blobUrl: string, fileName: string) {
+      const response = await fetch("/api/transcribe", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          blobUrl,
+          fileName,
+        }),
+      });
+      await handleTranscriptionResponse(response);
+  }
+
+  async function handleTranscriptionResponse(response: Response) {
+      const body = (await response.json()) as {
+        transcript?: Transcript;
+        error?: string;
+      };
+
+      if (!response.ok || !body.transcript) {
+        throw new Error(body.error ?? "Transcription failed.");
+      }
+
+      if (body.transcript.words.length > MAX_TRANSCRIPT_WORDS) {
+        throw new Error(
+          `This transcript is ${body.transcript.words.length.toLocaleString()} words. Upload audio with ${MAX_TRANSCRIPT_WORDS.toLocaleString()} words or fewer.`,
+        );
+      }
+
+      setTranscript(body.transcript);
+      setAudioDuration(Number(body.transcript.duration ?? 0));
+      setPendingTranscriptionBlob(null);
+      setWorkflowMessage(null);
+  }
+
+  function validateSelectedAudioFile(file: File): string | null {
+    if (file.size > MAX_AUDIO_UPLOAD_BYTES) {
+      return `Upload audio files up to ${formatUploadLimit()}.`;
+    }
+
+    if (!isAllowedAudioFile(file)) {
+      return "Upload a supported audio file: MP3, M4A, WAV, WebM, Ogg, AAC, or FLAC.";
+    }
+
+    return null;
   }
 
   function clearTiming() {
@@ -414,7 +691,10 @@ export function TranscriptEditor({
   }
 
   function loadDemoContent() {
+    clearSessionDraft();
+    void clearDraftAudioFile();
     clearAudioUrls();
+    pendingDirectUploadFileRef.current = null;
     originalAudioRef.current = null;
     pendingSeekTimeRef.current = null;
     setSourceAudioUrl(ORIGINAL_AUDIO_URL);
@@ -426,19 +706,23 @@ export function TranscriptEditor({
     setIsPlaying(false);
     setPreviewSignature("");
     setWorkflowMessage(null);
+    setPendingTranscriptionBlob(null);
     setHasTweakedGaps(false);
-    setPauses(demoModelPauses);
+    setPauses(freshDemoModelPauses());
     setSelectedWordIndex(null);
   }
 
   function resetWorkspace() {
+    clearSessionDraft();
+    void clearDraftAudioFile();
     clearAudioUrls();
+    pendingDirectUploadFileRef.current = null;
     originalAudioRef.current = null;
     pendingSeekTimeRef.current = null;
     setSourceAudioUrl("");
     setUploadedFileName(null);
     setAudioUrl("");
-    setTranscript(demoTranscript);
+    setTranscript(emptyWorkspaceTranscript());
     setAudioDuration(0);
     setCurrentTime(0);
     setIsPlaying(false);
@@ -446,6 +730,7 @@ export function TranscriptEditor({
     setIsExportGateOpen(false);
     setIsResetConfirmOpen(false);
     setWorkflowMessage(null);
+    setPendingTranscriptionBlob(null);
     clearTiming();
   }
 
@@ -582,9 +867,20 @@ export function TranscriptEditor({
     await downloadAudio({ limited: false });
   }
 
-  async function downloadLimitedAudio() {
-    await downloadAudio({ limited: true });
-    setIsExportGateOpen(false);
+  function persistCurrentSessionDraft() {
+    const draft = currentSessionDraft({
+      audioDuration,
+      hasTweakedGaps,
+      isDemoContentLoaded,
+      pauses: sortedPauses,
+      pendingTranscriptionBlob,
+      transcript,
+      uploadedFileName,
+    });
+
+    if (draft) {
+      saveSessionDraft(draft);
+    }
   }
 
   async function downloadAudio({ limited }: { limited: boolean }) {
@@ -649,6 +945,12 @@ export function TranscriptEditor({
                     <KeyRound className="size-4" />
                     API keys
                   </Button>
+                  {entitlement.isPaid ? (
+                    <div className="inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-sm font-medium text-amber-700">
+                      <Crown className="size-4" />
+                      Premium
+                    </div>
+                  ) : null}
                   <UserButton />
                 </>
               ) : (
@@ -663,7 +965,82 @@ export function TranscriptEditor({
           </div>
         </header>
 
-        <section className="mx-auto grid w-full max-w-7xl flex-1 grid-cols-1 gap-4 px-5 py-4 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <input
+          ref={uploadInputRef}
+          className="hidden"
+          type="file"
+          accept={AUDIO_UPLOAD_ACCEPT}
+          onChange={(event) => {
+            uploadAudio(event.currentTarget.files?.[0]);
+            event.currentTarget.value = "";
+          }}
+        />
+
+        {!hasRestoredDraft ? (
+          <section className="mx-auto flex w-full max-w-3xl flex-1 items-center px-5 py-10">
+            <div className="w-full rounded-md border bg-card px-5 py-8 text-center">
+              <LoaderCircle className="mx-auto mb-3 size-6 animate-spin text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">Restoring your workspace...</p>
+            </div>
+          </section>
+        ) : isWorkspaceEmpty ? (
+          <section
+            className="mx-auto flex w-full max-w-3xl flex-1 items-center px-5 py-10"
+            onDragEnter={handleAudioDragEnter}
+            onDragOver={handleAudioDragOver}
+            onDragLeave={handleAudioDragLeave}
+            onDrop={handleAudioDrop}
+          >
+            <div
+              className={cn(
+                "w-full space-y-5 rounded-md border border-dashed border-transparent p-4 transition-colors",
+                isDraggingAudio &&
+                  "border-emerald-500 bg-emerald-50/70 text-emerald-950",
+              )}
+            >
+              <div className="space-y-2 text-center">
+                <h2 className="text-2xl font-semibold tracking-tight">
+                  {isDraggingAudio ? "Drop audio to start" : "Start with audio"}
+                </h2>
+                <p className="text-sm leading-6 text-muted-foreground">
+                  Load the sample project, choose a recording, or drag audio here.
+                </p>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-28 flex-col gap-3 rounded-md"
+                  onClick={loadDemoContent}
+                >
+                  <FileText className="size-6" />
+                  Load Demo Content
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-28 flex-col gap-3 rounded-md"
+                  disabled={isTranscribing || isAutoTiming}
+                  onClick={openUploadPicker}
+                >
+                  {isTranscribing ? (
+                    <LoaderCircle className="size-6 animate-spin" />
+                  ) : (
+                    <Upload className="size-6" />
+                  )}
+                  Upload Audio
+                </Button>
+              </div>
+              {workflowNotice ? (
+                <WorkflowNoticePanel
+                  notice={workflowNotice}
+                  onClear={() => setWorkflowMessage(null)}
+                />
+              ) : null}
+            </div>
+          </section>
+        ) : (
+          <section className="mx-auto grid w-full max-w-7xl flex-1 grid-cols-1 gap-4 px-5 py-4 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div className="flex min-h-0 flex-col gap-4">
             <div className="rounded-md border bg-card px-4 py-3">
               <audio
@@ -694,7 +1071,7 @@ export function TranscriptEditor({
               />
               <CustomPlayer
                 currentTime={currentTime}
-                duration={Number(retimedTranscript.duration ?? audioDuration)}
+                duration={displayDuration}
                 isPlaying={isPlaying}
                 pauses={sortedPauses}
                 previewState={previewState}
@@ -727,7 +1104,7 @@ export function TranscriptEditor({
                     />
                     <TranscriptMetric
                       icon={Clock3}
-                      value={formatSeconds(Number(retimedTranscript.duration ?? 0))}
+                      value={formatSeconds(displayDuration)}
                       label="duration"
                     />
                   </div>
@@ -769,48 +1146,82 @@ export function TranscriptEditor({
             </div>
 
             <div className="rounded-md border bg-card">
-              <input
-                ref={uploadInputRef}
-                className="hidden"
-                type="file"
-                accept="audio/*"
-                onChange={(event) => {
-                  uploadAudio(event.currentTarget.files?.[0]);
-                  event.currentTarget.value = "";
-                }}
-              />
               <WorkflowStep
                 step="1"
                 icon={Upload}
                 label="Upload audio"
                 description={
-                  hasElevenLabsKey
-                    ? isTranscribing
-                      ? "Transcribing with ElevenLabs"
-                      : loadedAudioFileName ?? "Choose your own file"
-                    : "Needs ElevenLabs API key"
+                  loadedAudioFileName ?? "Choose your own file"
                 }
                 actionLabel={
-                  hasElevenLabsKey
-                    ? isTranscribing
-                      ? "Working"
-                      : loadedAudioFileName
-                      ? "Change"
-                      : "Choose"
-                    : "Locked"
+                  loadedAudioFileName ? "Change" : "Choose"
                 }
                 complete={Boolean(loadedAudioFileName)}
-                disabled={!hasElevenLabsKey || isTranscribing || isAutoTiming}
+                disabled={isTranscribing || isAutoTiming}
                 onClick={openUploadPicker}
               />
               <WorkflowStep
                 step="2"
+                icon={AudioLines}
+                label="Transcribe audio"
+                description={
+                  isDemoContentLoaded
+                    ? "Demo transcript loaded"
+                    : !loadedAudioFileName
+                      ? "Upload audio first"
+                    : isTranscribing
+                      ? "Transcribing with ElevenLabs"
+                    : transcript.words.length > 0
+                      ? `${transcript.words.length} words ready`
+                    : !isSignedIn
+                      ? "Create an account to transcribe"
+                    : !hasElevenLabsKey
+                      ? "Needs ElevenLabs API key"
+                    : "Use ElevenLabs speech-to-text"
+                }
+                actionLabel={
+                  isDemoContentLoaded
+                    ? undefined
+                    : isTranscribing
+                      ? "Working"
+                    : transcript.words.length > 0
+                      ? "Rerun"
+                    : !isSignedIn
+                      ? "Create account"
+                    : !hasElevenLabsKey
+                      ? "API keys"
+                    : "Transcribe"
+                }
+                complete={transcript.words.length > 0}
+                primary={primaryWorkflowStep === "transcribe"}
+                disabled={
+                  isDemoContentLoaded ||
+                  !loadedAudioFileName ||
+                  isTranscribing ||
+                  isAutoTiming
+                }
+                onClick={
+                  isDemoContentLoaded
+                    ? undefined
+                    : !isSignedIn
+                      ? () => {
+                          window.location.href = "/sign-up";
+                        }
+                    : !hasElevenLabsKey
+                      ? () => setIsSettingsOpen(true)
+                    : transcribeUploadedAudio
+                }
+              />
+              <WorkflowStep
+                step="3"
                 icon={Sparkles}
                 label="Auto time"
                 description={
-                  !hasOpenAiKey
-                    ? "Needs OpenAI API key"
-                    : isAutoTiming
+                  isDemoContentLoaded
+                    ? "Uses bundled demo timing"
+                    : !hasOpenAiKey
+                      ? "Needs OpenAI API key"
+                      : isAutoTiming
                       ? "Finding pause points with OpenAI"
                     : isTranscribing
                       ? "Transcribe audio first"
@@ -819,7 +1230,7 @@ export function TranscriptEditor({
                     : "Place natural pauses automatically"
                 }
                 actionLabel={
-                  hasOpenAiKey
+                  isDemoContentLoaded || hasOpenAiKey
                     ? isAutoTiming
                       ? "Working"
                       : sortedPauses.length > 0
@@ -830,7 +1241,7 @@ export function TranscriptEditor({
                 complete={sortedPauses.length > 0}
                 primary={primaryWorkflowStep === "auto"}
                 disabled={
-                  !hasOpenAiKey ||
+                  (!isDemoContentLoaded && !hasOpenAiKey) ||
                   !loadedAudioFileName ||
                   isTranscribing ||
                   isAutoTiming ||
@@ -839,7 +1250,7 @@ export function TranscriptEditor({
                 onClick={applyAutoTiming}
               />
               <WorkflowStep
-                step="3"
+                step="4"
                 icon={MousePointer2}
                 label="Tweak gaps"
                 description={
@@ -853,7 +1264,7 @@ export function TranscriptEditor({
                 primary={primaryWorkflowStep === "tweak"}
               />
               <WorkflowStep
-                step="4"
+                step="5"
                 icon={Download}
                 label="Download audio"
                 description={
@@ -871,11 +1282,6 @@ export function TranscriptEditor({
                 onClick={downloadCurrentAudio}
               />
             </div>
-            {workflowMessage ? (
-              <div className="rounded-md border border-destructive/25 bg-destructive/5 px-3 py-2 text-sm text-destructive">
-                {workflowMessage}
-              </div>
-            ) : null}
             {selectedWordIndex !== null ? (
               <Card className="animate-in fade-in-0 slide-in-from-right-2 rounded-md duration-200">
                 <CardHeader className="border-b py-3">
@@ -964,15 +1370,35 @@ export function TranscriptEditor({
               <RotateCcw className="size-4" />
               Reset everything
             </Button>
+            {workflowProgress ? (
+              <WorkflowProgressPanel progress={workflowProgress} />
+            ) : null}
+            {workflowNotice ? (
+              <WorkflowNoticePanel
+                notice={workflowNotice}
+                onClear={() => setWorkflowMessage(null)}
+              />
+            ) : null}
+            {entitlement.isPaid ? (
+              <a
+                href="https://github.com/Func-Main/pause-father"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-auto inline-flex items-center gap-2 rounded-md px-2 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <Code2 className="size-4" />
+                Source code
+              </a>
+            ) : null}
           </aside>
         </section>
+        )}
       </div>
       {isExportGateOpen ? (
         <ExportGate
-          exportLimitSeconds={exportLimitSeconds ?? 10}
           isSignedIn={Boolean(isSignedIn)}
           onClose={() => setIsExportGateOpen(false)}
-          onExportPreview={downloadLimitedAudio}
+          onBeforeCheckout={persistCurrentSessionDraft}
         />
       ) : null}
       {isResetConfirmOpen ? (
@@ -1114,6 +1540,129 @@ function ProviderSettingsDialog({
   );
 }
 
+type WorkflowProgress = {
+  title: string;
+  detail: string;
+};
+
+function WorkflowProgressPanel({ progress }: { progress: WorkflowProgress }) {
+  return (
+    <div
+      className="rounded-md border border-blue-200 bg-blue-50 px-3 py-3 text-sm text-blue-950"
+      role="status"
+      aria-live="polite"
+    >
+      <div className="flex items-start gap-2">
+        <LoaderCircle className="mt-0.5 size-4 shrink-0 animate-spin" />
+        <div className="min-w-0 space-y-1">
+          <div className="font-medium">{progress.title}</div>
+          <div className="leading-5 text-muted-foreground">{progress.detail}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type WorkflowNotice = {
+  tone: "error" | "info";
+  title: string;
+  detail: string;
+};
+
+function WorkflowNoticePanel({
+  notice,
+  onClear,
+}: {
+  notice: WorkflowNotice;
+  onClear: () => void;
+}) {
+  return (
+    <div
+      className={cn(
+        "rounded-md border px-3 py-3 text-sm",
+        notice.tone === "error"
+          ? "border-destructive/35 bg-destructive/10 text-destructive"
+          : "border-border bg-muted/30 text-foreground",
+      )}
+      role={notice.tone === "error" ? "alert" : "status"}
+      aria-live="polite"
+    >
+      <div className="flex items-start gap-2">
+        {notice.tone === "error" ? (
+          <AlertCircle className="mt-0.5 size-4 shrink-0" />
+        ) : (
+          <Check className="mt-0.5 size-4 shrink-0" />
+        )}
+        <div className="min-w-0 flex-1 space-y-1">
+          <div className="font-medium">{notice.title}</div>
+          <div className="leading-5 text-muted-foreground">{notice.detail}</div>
+        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-7 shrink-0 px-2"
+          onClick={onClear}
+        >
+          Clear
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function workingWorkflowProgressState({
+  isAutoTiming,
+  isTranscribing,
+}: {
+  isAutoTiming: boolean;
+  isTranscribing: boolean;
+}): WorkflowProgress | null {
+  if (isTranscribing) {
+    return {
+      title: "Transcribing audio",
+      detail: "Sending the uploaded audio to ElevenLabs speech-to-text.",
+    };
+  }
+
+  if (isAutoTiming) {
+    return {
+      title: "Finding gaps",
+      detail: "Asking OpenAI where pauses should be inserted.",
+    };
+  }
+
+  return null;
+}
+
+function workflowNoticeState({
+  message,
+  pendingTranscriptionBlob,
+}: {
+  message: string;
+  pendingTranscriptionBlob: { url: string; fileName: string } | null;
+}): WorkflowNotice {
+  const isError =
+    message.includes("failed") ||
+    message.includes("could not") ||
+    message.includes("Check your") ||
+    message.includes("ElevenLabs said") ||
+    message.includes("Upload audio files") ||
+    message.includes("supported audio file") ||
+    message.includes("words or fewer") ||
+    message.includes("supports transcripts");
+
+  return {
+    tone: isError ? "error" : "info",
+    title: isError
+      ? "Something needs attention"
+      : pendingTranscriptionBlob
+        ? "Audio uploaded"
+        : "Workflow update",
+    detail: message,
+  };
+}
+
 function ProviderKeyForm({
   label,
   description,
@@ -1224,8 +1773,8 @@ function ResetConfirmDialog({
             id="reset-confirm-description"
             className="text-sm leading-6 text-muted-foreground"
           >
-            This unloads the current audio, removes all timing, and clears your
-            current selection.
+            This unloads the current audio, clears the transcript, removes all
+            timing, and clears your current selection.
           </p>
         </div>
         <div className="mt-5 flex justify-end gap-2">
@@ -1242,15 +1791,13 @@ function ResetConfirmDialog({
 }
 
 function ExportGate({
-  exportLimitSeconds,
   isSignedIn,
   onClose,
-  onExportPreview,
+  onBeforeCheckout,
 }: {
-  exportLimitSeconds: number;
   isSignedIn: boolean;
   onClose: () => void;
-  onExportPreview: () => void;
+  onBeforeCheckout: () => void;
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 px-4 backdrop-blur-sm">
@@ -1278,6 +1825,7 @@ function ExportGate({
           {isSignedIn ? (
             <form
               action={createCheckoutSession}
+              onSubmit={onBeforeCheckout}
               className="flex items-center gap-2 rounded-md border bg-background px-2 py-2"
             >
               <Label htmlFor="export-giftware-amount" className="sr-only">
@@ -1317,14 +1865,6 @@ function ExportGate({
             </>
           )}
 
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={onExportPreview}
-          >
-            Export {exportLimitSeconds}-second preview again
-          </Button>
         </div>
       </div>
     </div>
@@ -1749,6 +2289,179 @@ function emptyTranscript(fileName: string): Transcript {
     segments: [],
     words: [],
   };
+}
+
+function emptyWorkspaceTranscript(): Transcript {
+  return {
+    task: "transcribe",
+    source: "empty-workspace",
+    text: "",
+    duration: 0,
+    segments: [],
+    words: [],
+  };
+}
+
+function freshDemoModelPauses(): AutoPause[] {
+  return demoModelPauses.map((pause) => ({ ...pause }));
+}
+
+function blobPathForFile(file: File): string {
+  const extension = file.name.includes(".") ? file.name.split(".").pop() : "audio";
+  return `one-shot-audio/${crypto.randomUUID()}.${extension ?? "audio"}`;
+}
+
+function dragEventHasFiles(event: DragEvent<HTMLElement>): boolean {
+  return Array.from(event.dataTransfer.types).includes("Files");
+}
+
+function firstDroppedAudioFile(event: DragEvent<HTMLElement>): File | undefined {
+  const files = Array.from(event.dataTransfer.files);
+  return files.find(isAllowedAudioFile) ?? files[0];
+}
+
+type SessionDraftBase = {
+  transcript: Transcript;
+  pauses: AutoPause[];
+  audioDuration: number;
+  hasTweakedGaps: boolean;
+  pendingTranscriptionBlob: { url: string; fileName: string } | null;
+};
+
+type SessionDraft =
+  | (SessionDraftBase & {
+      source: "demo";
+    })
+  | (SessionDraftBase & {
+      source: "upload";
+      uploadedFileName: string;
+    });
+
+function currentSessionDraft({
+  audioDuration,
+  hasTweakedGaps,
+  isDemoContentLoaded,
+  pauses,
+  pendingTranscriptionBlob,
+  transcript,
+  uploadedFileName,
+}: {
+  audioDuration: number;
+  hasTweakedGaps: boolean;
+  isDemoContentLoaded: boolean;
+  pauses: AutoPause[];
+  pendingTranscriptionBlob: { url: string; fileName: string } | null;
+  transcript: Transcript;
+  uploadedFileName: string | null;
+}): SessionDraft | null {
+  const base = {
+    transcript,
+    pauses,
+    audioDuration,
+    hasTweakedGaps,
+    pendingTranscriptionBlob,
+  };
+
+  if (uploadedFileName) {
+    return {
+      ...base,
+      source: "upload",
+      uploadedFileName,
+    };
+  }
+
+  if (isDemoContentLoaded && (transcript.words.length > 0 || pauses.length > 0)) {
+    return {
+      ...base,
+      source: "demo",
+    };
+  }
+
+  return null;
+}
+
+function loadSessionDraft(): SessionDraft | null {
+  try {
+    const rawDraft = window.localStorage.getItem(SESSION_DRAFT_STORAGE_KEY);
+    return rawDraft ? (JSON.parse(rawDraft) as SessionDraft) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveSessionDraft(draft: SessionDraft) {
+  try {
+    window.localStorage.setItem(SESSION_DRAFT_STORAGE_KEY, JSON.stringify(draft));
+  } catch (error) {
+    console.error("Failed to save local session draft", error);
+  }
+}
+
+function clearSessionDraft() {
+  try {
+    window.localStorage.removeItem(SESSION_DRAFT_STORAGE_KEY);
+  } catch (error) {
+    console.error("Failed to clear local session draft", error);
+  }
+}
+
+const DRAFT_AUDIO_DB_NAME = "pausefather-session-draft";
+const DRAFT_AUDIO_STORE_NAME = "files";
+const DRAFT_AUDIO_KEY = "last-audio";
+
+async function saveDraftAudioFile(file: File) {
+  const database = await openDraftAudioDatabase();
+  await draftAudioRequest<void>((resolve, reject) => {
+    const transaction = database.transaction(DRAFT_AUDIO_STORE_NAME, "readwrite");
+    transaction.objectStore(DRAFT_AUDIO_STORE_NAME).put(file, DRAFT_AUDIO_KEY);
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
+  });
+  database.close();
+}
+
+async function loadDraftAudioFile(): Promise<File | null> {
+  try {
+    const database = await openDraftAudioDatabase();
+    const file = await draftAudioRequest<File | null>((resolve, reject) => {
+      const transaction = database.transaction(DRAFT_AUDIO_STORE_NAME, "readonly");
+      const request = transaction.objectStore(DRAFT_AUDIO_STORE_NAME).get(DRAFT_AUDIO_KEY);
+      request.onsuccess = () => resolve(request.result instanceof File ? request.result : null);
+      request.onerror = () => reject(request.error);
+    });
+    database.close();
+    return file;
+  } catch {
+    return null;
+  }
+}
+
+async function clearDraftAudioFile() {
+  const database = await openDraftAudioDatabase();
+  await draftAudioRequest<void>((resolve, reject) => {
+    const transaction = database.transaction(DRAFT_AUDIO_STORE_NAME, "readwrite");
+    transaction.objectStore(DRAFT_AUDIO_STORE_NAME).delete(DRAFT_AUDIO_KEY);
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
+  });
+  database.close();
+}
+
+function openDraftAudioDatabase(): Promise<IDBDatabase> {
+  return draftAudioRequest<IDBDatabase>((resolve, reject) => {
+    const request = indexedDB.open(DRAFT_AUDIO_DB_NAME, 1);
+    request.onupgradeneeded = () => {
+      request.result.createObjectStore(DRAFT_AUDIO_STORE_NAME);
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+function draftAudioRequest<T>(
+  executor: (resolve: (value: T) => void, reject: (error: unknown) => void) => void,
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => executor(resolve, reject));
 }
 
 function clampDuration(durationMs: number): number {

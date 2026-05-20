@@ -1,6 +1,7 @@
 "use server";
 
 import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getStripe } from "@/lib/billing/stripe";
 
@@ -17,11 +18,7 @@ export async function createCheckoutSession(formData: FormData) {
     redirect("/sign-in");
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-
-  if (!appUrl) {
-    throw new Error("Missing NEXT_PUBLIC_APP_URL");
-  }
+  const appUrl = await getAppUrl();
 
   const amountCents = giftwareAmountCents(formData.get("amountDollars"));
   const user = await currentUser();
@@ -87,11 +84,7 @@ export async function createBillingPortalSession() {
     redirect("/sign-in");
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-
-  if (!appUrl) {
-    throw new Error("Missing NEXT_PUBLIC_APP_URL");
-  }
+  const appUrl = await getAppUrl();
 
   const user = await currentUser();
   const metadata = user?.privateMetadata as BillingMetadata | undefined;
@@ -124,4 +117,25 @@ function giftwareAmountCents(value: FormDataEntryValue | null): number {
     MIN_GIFTWARE_AMOUNT_CENTS,
     Math.round(numericValue * 100),
   );
+}
+
+async function getAppUrl(): Promise<string> {
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
+  }
+
+  const headersList = await headers();
+  const host = headersList.get("x-forwarded-host") ?? headersList.get("host");
+
+  if (!host) {
+    throw new Error("Missing app URL. Set NEXT_PUBLIC_APP_URL.");
+  }
+
+  const protocol =
+    headersList.get("x-forwarded-proto") ??
+    (host.startsWith("localhost") || host.startsWith("127.0.0.1")
+      ? "http"
+      : "https");
+
+  return `${protocol}://${host}`;
 }

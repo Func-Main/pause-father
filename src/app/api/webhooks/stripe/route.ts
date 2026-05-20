@@ -1,6 +1,6 @@
-import { clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+import { fulfillCheckoutSession } from "@/lib/billing/fulfillment";
 import { getStripe } from "@/lib/billing/stripe";
 
 export async function POST(request: Request) {
@@ -9,6 +9,10 @@ export async function POST(request: Request) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!signature || !webhookSecret) {
+    console.error("Stripe webhook configuration missing", {
+      hasSignature: Boolean(signature),
+      hasWebhookSecret: Boolean(webhookSecret),
+    });
     return NextResponse.json(
       { error: "Stripe webhook is not configured" },
       { status: 400 },
@@ -23,64 +27,29 @@ export async function POST(request: Request) {
       signature,
       webhookSecret,
     );
-  } catch {
+  } catch (error) {
+    console.error("Stripe webhook signature verification failed", {
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
+  console.info("Stripe webhook received", {
+    eventId: event.id,
+    eventType: event.type,
+  });
+
   switch (event.type) {
     case "checkout.session.completed":
-      await syncCheckoutSession(event.data.object as Stripe.Checkout.Session);
+      await fulfillCheckoutSession({
+        session: event.data.object as Stripe.Checkout.Session,
+      });
+      console.info("Stripe checkout session fulfillment handled", {
+        eventId: event.id,
+        sessionId: (event.data.object as Stripe.Checkout.Session).id,
+      });
       break;
   }
 
   return NextResponse.json({ received: true });
-}
-
-async function syncCheckoutSession(session: Stripe.Checkout.Session) {
-  const clerkUserId = session.metadata?.clerkUserId;
-
-  if (!clerkUserId) {
-    return;
-  }
-
-  if (session.payment_status !== "paid") {
-    return;
-  }
-
-  await updateUserBillingMetadata({
-    clerkUserId,
-    stripeCustomerId:
-      typeof session.customer === "string" ? session.customer : undefined,
-    stripeCheckoutSessionId: session.id,
-    amountTotal: session.amount_total ?? undefined,
-    currency: session.currency ?? undefined,
-  });
-}
-
-async function updateUserBillingMetadata({
-  clerkUserId,
-  stripeCustomerId,
-  stripeCheckoutSessionId,
-  amountTotal,
-  currency,
-}: {
-  clerkUserId: string;
-  stripeCustomerId?: string;
-  stripeCheckoutSessionId: string;
-  amountTotal?: number;
-  currency?: string;
-}) {
-  const client = await clerkClient();
-
-  await client.users.updateUserMetadata(clerkUserId, {
-    privateMetadata: {
-      plan: "paid",
-      paymentType: "giftware",
-      stripeCustomerId,
-      stripeCheckoutSessionId,
-      giftwareAmountCents: amountTotal,
-      giftwareCurrency: currency,
-      paidAt: new Date().toISOString(),
-    },
-  });
 }

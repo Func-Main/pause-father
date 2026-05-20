@@ -14,6 +14,15 @@ The app creates the `user_provider_keys` table on first use. The same schema is
 also available at `db/migrations/001_user_provider_keys.sql` if you prefer to
 run migrations explicitly in Neon.
 
+For local development without Vercel Blob, add:
+
+```bash
+NEXT_PUBLIC_AUDIO_UPLOAD_MODE="direct"
+```
+
+Production should omit that value, or set it to `blob`, so browser uploads go
+through Vercel Blob before transcription.
+
 First, run the development server:
 
 ```bash
