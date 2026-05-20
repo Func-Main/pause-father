@@ -50,7 +50,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import {
   Tooltip,
@@ -85,9 +84,7 @@ export function TranscriptEditor({
   entitlement: UserEntitlement;
 }) {
   const [pauses, setPauses] = useState<AutoPause[]>(modelPauses);
-  const [selectedWordIndex, setSelectedWordIndex] = useState<number | null>(
-    modelPauses[0]?.after_word_index ?? null,
-  );
+  const [selectedWordIndex, setSelectedWordIndex] = useState<number | null>(null);
   const [sourceAudioUrl, setSourceAudioUrl] = useState(ORIGINAL_AUDIO_URL);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [audioUrl, setAudioUrl] = useState(ORIGINAL_AUDIO_URL);
@@ -270,7 +267,7 @@ export function TranscriptEditor({
   function applyAutoTiming() {
     setHasTweakedGaps(false);
     setPauses(modelPauses);
-    setSelectedWordIndex(modelPauses[0]?.after_word_index ?? null);
+    setSelectedWordIndex(null);
   }
 
   function openUploadPicker() {
@@ -704,89 +701,85 @@ export function TranscriptEditor({
                 onClick={downloadCurrentAudio}
               />
             </div>
-            <Card className="rounded-md">
-              <CardHeader className="border-b py-3">
-                <CardTitle className="text-base">Selection</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-5 pt-4">
-                <div className="space-y-2">
-                  <Label>Selected word</Label>
-                  <div className="rounded-md border bg-muted/40 px-3 py-2 text-sm">
-                    <div>{selectedWord ? selectedWord.word : "No word selected"}</div>
-                    {selectedWordIndex !== null ? (
-                      <div className="mt-1 text-xs text-muted-foreground">
-                        Word {selectedWordIndex}
+            {selectedWordIndex !== null ? (
+              <Card className="animate-in fade-in-0 slide-in-from-right-2 rounded-md duration-200">
+                <CardHeader className="border-b py-3">
+                  <CardTitle className="space-y-1 text-base">
+                    <span className="block text-xs font-normal text-muted-foreground">
+                      Selected word
+                    </span>
+                    <span className="block truncate">
+                      {selectedWord?.word ?? `Word ${selectedWordIndex}`}
+                    </span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-5 pt-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <Label htmlFor="pause-duration">Pause</Label>
+                      <div className="relative">
+                        <Input
+                          id="pause-duration"
+                          className="h-8 w-24 pr-7"
+                          aria-label="Pause duration in seconds"
+                          inputMode="numeric"
+                          value={selectedPauseDurationSeconds.toFixed(1)}
+                          onChange={(event) => {
+                            if (selectedWordIndex === null) {
+                              return;
+                            }
+                            setPauseDuration(
+                              selectedWordIndex,
+                              (Number(event.currentTarget.value) || 0) * 1000,
+                            );
+                          }}
+                        />
+                        <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                          s
+                        </span>
                       </div>
-                    ) : null}
-                  </div>
-                </div>
-
-                <Separator />
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <Label htmlFor="pause-duration">Pause</Label>
-                    <div className="relative">
-                      <Input
-                        id="pause-duration"
-                        className="h-8 w-24 pr-7"
-                        aria-label="Pause duration in seconds"
-                        inputMode="numeric"
-                        value={selectedPauseDurationSeconds.toFixed(1)}
-                        onChange={(event) => {
+                    </div>
+                    <div className="space-y-1">
+                      <Slider
+                        value={[selectedPauseDurationSeconds]}
+                        min={0}
+                        max={MAX_MANUAL_PAUSE_MS / 1000}
+                        step={0.1}
+                        disabled={selectedWordIndex === null}
+                        onValueChange={(value) => {
                           if (selectedWordIndex === null) {
                             return;
                           }
+                          const nextValue = Array.isArray(value) ? value[0] : value;
                           setPauseDuration(
                             selectedWordIndex,
-                            (Number(event.currentTarget.value) || 0) * 1000,
+                            (nextValue ?? 0) * 1000,
                           );
                         }}
                       />
-                      <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                        s
-                      </span>
+                      <div className="flex justify-between font-mono text-[11px] tabular-nums text-muted-foreground">
+                        <span>0.0s</span>
+                        <span>{(MAX_MANUAL_PAUSE_MS / 1000).toFixed(1)}s</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="space-y-1">
-                    <Slider
-                      value={[selectedPauseDurationSeconds]}
-                      min={0}
-                      max={MAX_MANUAL_PAUSE_MS / 1000}
-                      step={0.1}
-                      disabled={selectedWordIndex === null}
-                      onValueChange={(value) => {
-                        if (selectedWordIndex === null) {
-                          return;
-                        }
-                        const nextValue = Array.isArray(value) ? value[0] : value;
-                        setPauseDuration(
-                          selectedWordIndex,
-                          (nextValue ?? 0) * 1000,
-                        );
-                      }}
-                    />
-                    <div className="flex justify-between font-mono text-[11px] tabular-nums text-muted-foreground">
-                      <span>0.0s</span>
-                      <span>{(MAX_MANUAL_PAUSE_MS / 1000).toFixed(1)}s</span>
+
+                  {selectedPause ? (
+                    <div className="flex justify-end">
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={removeSelectedPause}
+                        aria-label="Delete selected pause"
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
                     </div>
-                  </div>
-                </div>
+                  ) : null}
 
-                {selectedPause ? (
-                  <div className="flex justify-end">
-                    <Button
-                      size="icon"
-                      variant="outline"
-                      onClick={removeSelectedPause}
-                      aria-label="Delete selected pause"
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
-                  </div>
-                ) : null}
-
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            ) : null}
 
             <Button
               className="w-full justify-start border-destructive/35 text-destructive hover:bg-destructive hover:text-destructive-foreground"
