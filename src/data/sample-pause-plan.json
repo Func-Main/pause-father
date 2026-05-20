@@ -1,0 +1,224 @@
+{
+  "pauses": [
+    {
+      "after_word_index": 57,
+      "after_segment_id": 10,
+      "at_seconds": 21.86873,
+      "pause_type": "thinking",
+      "duration_ms": 2000,
+      "word": "3",
+      "reason": "Gives the learner time to answer the simple math question before the answer is revealed.",
+      "requested_at_seconds": 21.84,
+      "zero_crossing_shift_ms": 28.73
+    },
+    {
+      "after_word_index": 89,
+      "after_segment_id": 16,
+      "at_seconds": 33.881655,
+      "pause_type": "thinking",
+      "duration_ms": 4500,
+      "word": "now",
+      "reason": "Allows time to calculate the multi-step apple problem before hearing the answer.",
+      "requested_at_seconds": 33.88,
+      "zero_crossing_shift_ms": 1.655
+    },
+    {
+      "after_word_index": 126,
+      "after_segment_id": 24,
+      "at_seconds": 49.936236,
+      "pause_type": "interaction",
+      "duration_ms": 1800,
+      "word": "Hello",
+      "reason": "Repeat-after-me prompt; the learner should say “Hello” before hearing the Spanish model.",
+      "requested_at_seconds": 49.88,
+      "zero_crossing_shift_ms": 56.236
+    },
+    {
+      "after_word_index": 129,
+      "after_segment_id": 26,
+      "at_seconds": 52.643628,
+      "pause_type": "interaction",
+      "duration_ms": 2200,
+      "word": "morning",
+      "reason": "Repeat-after-me prompt; the learner should say “Good morning” before the Spanish model.",
+      "requested_at_seconds": 52.58,
+      "zero_crossing_shift_ms": 63.628
+    },
+    {
+      "after_word_index": 133,
+      "after_segment_id": 27,
+      "at_seconds": 55.960476,
+      "pause_type": "interaction",
+      "duration_ms": 2000,
+      "word": "you",
+      "reason": "Repeat-after-me prompt; the learner should say “Thank you” before the Spanish model.",
+      "requested_at_seconds": 55.96,
+      "zero_crossing_shift_ms": 0.476
+    },
+    {
+      "after_word_index": 159,
+      "after_segment_id": 33,
+      "at_seconds": 67.359501,
+      "pause_type": "interaction",
+      "duration_ms": 2500,
+      "word": "Hello",
+      "reason": "Translation quiz prompt; the learner needs time to produce the Spanish word before the answer.",
+      "requested_at_seconds": 67.32,
+      "zero_crossing_shift_ms": 39.501
+    },
+    {
+      "after_word_index": 162,
+      "after_segment_id": 34,
+      "at_seconds": 70.500068,
+      "pause_type": "interaction",
+      "duration_ms": 2500,
+      "word": "you",
+      "reason": "Translation quiz prompt; the learner needs time to say the Spanish phrase before the answer.",
+      "requested_at_seconds": 70.5,
+      "zero_crossing_shift_ms": 0.068
+    },
+    {
+      "after_word_index": 184,
+      "after_segment_id": 40,
+      "at_seconds": 81.463107,
+      "pause_type": "interaction",
+      "duration_ms": 3500,
+      "word": "hold",
+      "reason": "Movement hold; the user needs time to squat down and hold before standing up.",
+      "requested_at_seconds": 81.4,
+      "zero_crossing_shift_ms": 63.107
+    },
+    {
+      "after_word_index": 186,
+      "after_segment_id": 41,
+      "at_seconds": 83.062358,
+      "pause_type": "interaction",
+      "duration_ms": 1500,
+      "word": "up",
+      "reason": "Movement step; the user needs time to stand before the next exercise instruction.",
+      "requested_at_seconds": 83.06,
+      "zero_crossing_shift_ms": 2.358
+    },
+    {
+      "after_word_index": 197,
+      "after_segment_id": 43,
+      "at_seconds": 87.520159,
+      "pause_type": "interaction",
+      "duration_ms": 3500,
+      "word": "there",
+      "reason": "Movement hold; the user needs time to hold the lunge before returning to standing.",
+      "requested_at_seconds": 87.52,
+      "zero_crossing_shift_ms": 0.159
+    },
+    {
+      "after_word_index": 210,
+      "after_segment_id": 47,
+      "at_seconds": 94.677868,
+      "pause_type": "interaction",
+      "duration_ms": 4000,
+      "word": "slowly",
+      "reason": "Breathing phase; the user needs time to inhale slowly before the hold instruction.",
+      "requested_at_seconds": 94.62,
+      "zero_crossing_shift_ms": 57.868
+    },
+    {
+      "after_word_index": 213,
+      "after_segment_id": 49,
+      "at_seconds": 96.584195,
+      "pause_type": "interaction",
+      "duration_ms": 4000,
+      "word": "breath",
+      "reason": "Breath hold; the user needs time to hold their breath before exhaling.",
+      "requested_at_seconds": 96.56,
+      "zero_crossing_shift_ms": 24.195
+    },
+    {
+      "after_word_index": 249,
+      "after_segment_id": 56,
+      "at_seconds": 113.630136,
+      "pause_type": "thinking",
+      "duration_ms": 5000,
+      "word": "difficult",
+      "reason": "Reflection prompt; the user needs time to think of something difficult before writing.",
+      "requested_at_seconds": 113.54,
+      "zero_crossing_shift_ms": 90.136
+    },
+    {
+      "after_word_index": 255,
+      "after_segment_id": 58,
+      "at_seconds": 116.960023,
+      "pause_type": "interaction",
+      "duration_ms": 10000,
+      "word": "it",
+      "reason": "Writing prompt; the user needs time to write one sentence.",
+      "requested_at_seconds": 116.96,
+      "zero_crossing_shift_ms": 0.023
+    },
+    {
+      "after_word_index": 265,
+      "after_segment_id": 60,
+      "at_seconds": 120.840204,
+      "pause_type": "thinking",
+      "duration_ms": 5000,
+      "word": "it",
+      "reason": "Reflection prompt; the user needs time to think of what helped them.",
+      "requested_at_seconds": 120.84,
+      "zero_crossing_shift_ms": 0.204
+    },
+    {
+      "after_word_index": 269,
+      "after_segment_id": 61,
+      "at_seconds": 123.081814,
+      "pause_type": "interaction",
+      "duration_ms": 8000,
+      "word": "too",
+      "reason": "Writing prompt; the user needs time to write the second response.",
+      "requested_at_seconds": 123.08,
+      "zero_crossing_shift_ms": 1.814
+    },
+    {
+      "after_word_index": 286,
+      "after_segment_id": 65,
+      "at_seconds": 130.370113,
+      "pause_type": "interaction",
+      "duration_ms": 4000,
+      "word": "triangle",
+      "reason": "Visual search prompt; the user needs time to find the red triangle.",
+      "requested_at_seconds": 130.22,
+      "zero_crossing_shift_ms": 150.113
+    },
+    {
+      "after_word_index": 289,
+      "after_segment_id": 66,
+      "at_seconds": 132.261247,
+      "pause_type": "interaction",
+      "duration_ms": 1500,
+      "word": "it",
+      "reason": "Tap command; the user needs time to tap the red triangle.",
+      "requested_at_seconds": 132.26,
+      "zero_crossing_shift_ms": 1.247
+    },
+    {
+      "after_word_index": 293,
+      "after_segment_id": 67,
+      "at_seconds": 135.049796,
+      "pause_type": "interaction",
+      "duration_ms": 4000,
+      "word": "circle",
+      "reason": "Visual search prompt; the user needs time to find the smallest circle.",
+      "requested_at_seconds": 134.9,
+      "zero_crossing_shift_ms": 149.796
+    },
+    {
+      "after_word_index": 296,
+      "after_segment_id": 68,
+      "at_seconds": 137.320159,
+      "pause_type": "interaction",
+      "duration_ms": 1500,
+      "word": "that",
+      "reason": "Tap command; the user needs time to tap the smallest circle.",
+      "requested_at_seconds": 137.32,
+      "zero_crossing_shift_ms": 0.159
+    }
+  ]
+}

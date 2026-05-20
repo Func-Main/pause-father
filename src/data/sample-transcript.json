@@ -1,0 +1,3143 @@
+{
+  "task": "transcribe",
+  "language": "english",
+  "duration": 151.24000549316406,
+  "text": "Welcome to this demo. In some voice experiences, silence is not a mistake. Silence is the time the user needs to do the thing they were just asked to do. If the voice keeps talking too quickly, the task becomes impossible. In a math learning app, the tutor says, now it's your turn. What is 2 plus 3? The answer is 5. Then the tutor says, try another one. You have 6 apples. You give 2 away, and then you get 3 more. How many apples do you have now? You have 7 apples. The useful moment is the space between the question and the answer, because the learner needs time to calculate. In a language learning app, the teacher says, repeat after me in Spanish. Hello. Hola. Good morning. Buenos dias. Thank you. Gracias. Then the teacher changes the task and says, now I'll say the English word, and you say the Spanish word before I tell you. Hello. Hola. Thank you. Gracias. The silence matters because the learner needs time to speak. In a fitness app, the coach says, squat down and hold. Stand up. Step your right foot back into a lunge and hold there. Return to standing. In a breathing app, the guide says, breathe in slowly. Hold your breath. Breathe out slowly. These instructions only work if the user has time to move or breathe before hearing the next step. In a journaling app, the guide says, think of one thing that made today difficult. Now write one sentence about it. Think of one thing that helped you get through it. Write that down too. In a visual search app, the voice says, look at the picture and find the red triangle. Now tap it. Find the smallest circle. Now tap that. End of demo. The voice should pause whenever the user needs to think, answer, move, speak, write, search, choose, calculate, or act.",
+  "segments": [
+    {
+      "id": 0,
+      "seek": 0,
+      "start": 0.0,
+      "end": 1.1200000047683716,
+      "text": " Welcome to this demo.",
+      "tokens": [
+        50364,
+        4027,
+        281,
+        341,
+        10723,
+        13,
+        50464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.20771315693855286,
+      "compression_ratio": 1.605263113975525,
+      "no_speech_prob": 0.0029803726356476545
+    },
+    {
+      "id": 1,
+      "seek": 0,
+      "start": 2.180000066757202,
+      "end": 3.4800000190734863,
+      "text": " In some voice experiences,",
+      "tokens": [
+        50464,
+        682,
+        512,
+        3177,
+        5235,
+        11,
+        50564
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.20771315693855286,
+      "compression_ratio": 1.605263113975525,
+      "no_speech_prob": 0.0029803726356476545
+    },
+    {
+      "id": 2,
+      "seek": 0,
+      "start": 4.300000190734863,
+      "end": 5.539999961853027,
+      "text": " silence is not a mistake.",
+      "tokens": [
+        50564,
+        12239,
+        307,
+        406,
+        257,
+        6146,
+        13,
+        50664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.20771315693855286,
+      "compression_ratio": 1.605263113975525,
+      "no_speech_prob": 0.0029803726356476545
+    },
+    {
+      "id": 3,
+      "seek": 0,
+      "start": 6.940000057220459,
+      "end": 7.960000038146973,
+      "text": " Silence is the time the user",
+      "tokens": [
+        50664,
+        34570,
+        307,
+        264,
+        565,
+        264,
+        4195,
+        50764
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.20771315693855286,
+      "compression_ratio": 1.605263113975525,
+      "no_speech_prob": 0.0029803726356476545
+    },
+    {
+      "id": 4,
+      "seek": 0,
+      "start": 7.960000038146973,
+      "end": 9.84000015258789,
+      "text": " needs to do the thing they were just asked",
+      "tokens": [
+        50764,
+        2203,
+        281,
+        360,
+        264,
+        551,
+        436,
+        645,
+        445,
+        2351,
+        50864
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.20771315693855286,
+      "compression_ratio": 1.605263113975525,
+      "no_speech_prob": 0.0029803726356476545
+    },
+    {
+      "id": 5,
+      "seek": 0,
+      "start": 9.84000015258789,
+      "end": 11.859999656677246,
+      "text": " to do. If the voice",
+      "tokens": [
+        50864,
+        281,
+        360,
+        13,
+        759,
+        264,
+        3177,
+        50964
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.20771315693855286,
+      "compression_ratio": 1.605263113975525,
+      "no_speech_prob": 0.0029803726356476545
+    },
+    {
+      "id": 6,
+      "seek": 0,
+      "start": 11.859999656677246,
+      "end": 14.119999885559082,
+      "text": " keeps talking too quickly, the task",
+      "tokens": [
+        50964,
+        5965,
+        1417,
+        886,
+        2661,
+        11,
+        264,
+        5633,
+        51064
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.20771315693855286,
+      "compression_ratio": 1.605263113975525,
+      "no_speech_prob": 0.0029803726356476545
+    },
+    {
+      "id": 7,
+      "seek": 0,
+      "start": 14.119999885559082,
+      "end": 15.15999984741211,
+      "text": " becomes impossible.",
+      "tokens": [
+        51064,
+        3643,
+        6243,
+        13,
+        51164
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.20771315693855286,
+      "compression_ratio": 1.605263113975525,
+      "no_speech_prob": 0.0029803726356476545
+    },
+    {
+      "id": 8,
+      "seek": 0,
+      "start": 16.360000610351562,
+      "end": 18.139999389648438,
+      "text": " In a math learning app, the tutor",
+      "tokens": [
+        51164,
+        682,
+        257,
+        5221,
+        2539,
+        724,
+        11,
+        264,
+        35613,
+        51264
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.20771315693855286,
+      "compression_ratio": 1.605263113975525,
+      "no_speech_prob": 0.0029803726356476545
+    },
+    {
+      "id": 9,
+      "seek": 0,
+      "start": 17.979999542236328,
+      "end": 19.940000534057617,
+      "text": " says, now it's your turn.",
+      "tokens": [
+        51264,
+        1619,
+        11,
+        586,
+        309,
+        311,
+        428,
+        1261,
+        13,
+        51364
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.20771315693855286,
+      "compression_ratio": 1.605263113975525,
+      "no_speech_prob": 0.0029803726356476545
+    },
+    {
+      "id": 10,
+      "seek": 0,
+      "start": 20.520000457763672,
+      "end": 21.84000015258789,
+      "text": " What is 2 plus 3?",
+      "tokens": [
+        51364,
+        708,
+        307,
+        568,
+        1804,
+        805,
+        30,
+        51464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.20771315693855286,
+      "compression_ratio": 1.605263113975525,
+      "no_speech_prob": 0.0029803726356476545
+    },
+    {
+      "id": 11,
+      "seek": 0,
+      "start": 22.139999389648438,
+      "end": 23.600000381469727,
+      "text": " The answer is 5.",
+      "tokens": [
+        51464,
+        440,
+        1867,
+        307,
+        1025,
+        13,
+        51564
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.20771315693855286,
+      "compression_ratio": 1.605263113975525,
+      "no_speech_prob": 0.0029803726356476545
+    },
+    {
+      "id": 12,
+      "seek": 0,
+      "start": 24.15999984741211,
+      "end": 25.5,
+      "text": " Then the tutor says,",
+      "tokens": [
+        51564,
+        1396,
+        264,
+        35613,
+        1619,
+        11,
+        51664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.20771315693855286,
+      "compression_ratio": 1.605263113975525,
+      "no_speech_prob": 0.0029803726356476545
+    },
+    {
+      "id": 13,
+      "seek": 0,
+      "start": 26.280000686645508,
+      "end": 28.0,
+      "text": " try another one. You have 6",
+      "tokens": [
+        51664,
+        853,
+        1071,
+        472,
+        13,
+        509,
+        362,
+        1386,
+        51764
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.20771315693855286,
+      "compression_ratio": 1.605263113975525,
+      "no_speech_prob": 0.0029803726356476545
+    },
+    {
+      "id": 14,
+      "seek": 2816,
+      "start": 28.15999984741211,
+      "end": 29.940000534057617,
+      "text": " apples. You give 2 away,",
+      "tokens": [
+        50364,
+        16814,
+        13,
+        509,
+        976,
+        568,
+        1314,
+        11,
+        50464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.1412048041820526,
+      "compression_ratio": 1.5201793909072876,
+      "no_speech_prob": 0.19915297627449036
+    },
+    {
+      "id": 15,
+      "seek": 2816,
+      "start": 30.0,
+      "end": 31.479999542236328,
+      "text": " and then you get 3 more.",
+      "tokens": [
+        50464,
+        293,
+        550,
+        291,
+        483,
+        805,
+        544,
+        13,
+        50564
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.1412048041820526,
+      "compression_ratio": 1.5201793909072876,
+      "no_speech_prob": 0.19915297627449036
+    },
+    {
+      "id": 16,
+      "seek": 2816,
+      "start": 32.220001220703125,
+      "end": 33.880001068115234,
+      "text": " How many apples do you have now?",
+      "tokens": [
+        50564,
+        1012,
+        867,
+        16814,
+        360,
+        291,
+        362,
+        586,
+        30,
+        50664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.1412048041820526,
+      "compression_ratio": 1.5201793909072876,
+      "no_speech_prob": 0.19915297627449036
+    },
+    {
+      "id": 17,
+      "seek": 2816,
+      "start": 34.220001220703125,
+      "end": 35.880001068115234,
+      "text": " You have 7 apples.",
+      "tokens": [
+        50664,
+        509,
+        362,
+        1614,
+        16814,
+        13,
+        50764
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.1412048041820526,
+      "compression_ratio": 1.5201793909072876,
+      "no_speech_prob": 0.19915297627449036
+    },
+    {
+      "id": 18,
+      "seek": 2816,
+      "start": 37.18000030517578,
+      "end": 38.15999984741211,
+      "text": " The useful moment",
+      "tokens": [
+        50764,
+        440,
+        4420,
+        1623,
+        50864
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.1412048041820526,
+      "compression_ratio": 1.5201793909072876,
+      "no_speech_prob": 0.19915297627449036
+    },
+    {
+      "id": 19,
+      "seek": 2816,
+      "start": 38.15999984741211,
+      "end": 40.060001373291016,
+      "text": " is the space between the question",
+      "tokens": [
+        50864,
+        307,
+        264,
+        1901,
+        1296,
+        264,
+        1168,
+        50964
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.1412048041820526,
+      "compression_ratio": 1.5201793909072876,
+      "no_speech_prob": 0.19915297627449036
+    },
+    {
+      "id": 20,
+      "seek": 2816,
+      "start": 40.060001373291016,
+      "end": 42.119998931884766,
+      "text": " and the answer, because the learner needs",
+      "tokens": [
+        50964,
+        293,
+        264,
+        1867,
+        11,
+        570,
+        264,
+        33347,
+        2203,
+        51064
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.1412048041820526,
+      "compression_ratio": 1.5201793909072876,
+      "no_speech_prob": 0.19915297627449036
+    },
+    {
+      "id": 21,
+      "seek": 2816,
+      "start": 42.119998931884766,
+      "end": 43.20000076293945,
+      "text": " time to calculate.",
+      "tokens": [
+        51064,
+        565,
+        281,
+        8873,
+        13,
+        51164
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.1412048041820526,
+      "compression_ratio": 1.5201793909072876,
+      "no_speech_prob": 0.19915297627449036
+    },
+    {
+      "id": 22,
+      "seek": 2816,
+      "start": 43.91999816894531,
+      "end": 46.15999984741211,
+      "text": " In a language learning app, the teacher",
+      "tokens": [
+        51164,
+        682,
+        257,
+        2856,
+        2539,
+        724,
+        11,
+        264,
+        5027,
+        51264
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.1412048041820526,
+      "compression_ratio": 1.5201793909072876,
+      "no_speech_prob": 0.19915297627449036
+    },
+    {
+      "id": 23,
+      "seek": 2816,
+      "start": 46.15999984741211,
+      "end": 48.2400016784668,
+      "text": " says, repeat after me in",
+      "tokens": [
+        51264,
+        1619,
+        11,
+        7149,
+        934,
+        385,
+        294,
+        51364
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.1412048041820526,
+      "compression_ratio": 1.5201793909072876,
+      "no_speech_prob": 0.19915297627449036
+    },
+    {
+      "id": 24,
+      "seek": 2816,
+      "start": 47.97999954223633,
+      "end": 49.880001068115234,
+      "text": " Spanish. Hello.",
+      "tokens": [
+        51364,
+        8058,
+        13,
+        2425,
+        13,
+        51464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.1412048041820526,
+      "compression_ratio": 1.5201793909072876,
+      "no_speech_prob": 0.19915297627449036
+    },
+    {
+      "id": 25,
+      "seek": 2816,
+      "start": 51.060001373291016,
+      "end": 52.279998779296875,
+      "text": " Hola. Good",
+      "tokens": [
+        51464,
+        22637,
+        13,
+        2205,
+        51564
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.1412048041820526,
+      "compression_ratio": 1.5201793909072876,
+      "no_speech_prob": 0.19915297627449036
+    },
+    {
+      "id": 26,
+      "seek": 2816,
+      "start": 52.279998779296875,
+      "end": 54.040000915527344,
+      "text": " morning. Buenos dias.",
+      "tokens": [
+        51564,
+        2446,
+        13,
+        38058,
+        21084,
+        13,
+        51664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.1412048041820526,
+      "compression_ratio": 1.5201793909072876,
+      "no_speech_prob": 0.19915297627449036
+    },
+    {
+      "id": 27,
+      "seek": 2816,
+      "start": 55.2400016784668,
+      "end": 55.959999084472656,
+      "text": " Thank you.",
+      "tokens": [
+        51664,
+        1044,
+        291,
+        13,
+        51764
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.1412048041820526,
+      "compression_ratio": 1.5201793909072876,
+      "no_speech_prob": 0.19915297627449036
+    },
+    {
+      "id": 28,
+      "seek": 5596,
+      "start": 55.959999084472656,
+      "end": 57.220001220703125,
+      "text": " Gracias.",
+      "tokens": [
+        50364,
+        26909,
+        13,
+        50464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10689837485551834,
+      "compression_ratio": 1.5343915224075317,
+      "no_speech_prob": 0.018533973023295403
+    },
+    {
+      "id": 29,
+      "seek": 5596,
+      "start": 58.380001068115234,
+      "end": 59.91999816894531,
+      "text": " Then the teacher changes the task",
+      "tokens": [
+        50464,
+        1396,
+        264,
+        5027,
+        2962,
+        264,
+        5633,
+        50564
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10689837485551834,
+      "compression_ratio": 1.5343915224075317,
+      "no_speech_prob": 0.018533973023295403
+    },
+    {
+      "id": 30,
+      "seek": 5596,
+      "start": 59.91999816894531,
+      "end": 61.959999084472656,
+      "text": " and says, now I'll",
+      "tokens": [
+        50564,
+        293,
+        1619,
+        11,
+        586,
+        286,
+        603,
+        50664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10689837485551834,
+      "compression_ratio": 1.5343915224075317,
+      "no_speech_prob": 0.018533973023295403
+    },
+    {
+      "id": 31,
+      "seek": 5596,
+      "start": 61.959999084472656,
+      "end": 63.91999816894531,
+      "text": " say the English word, and you say",
+      "tokens": [
+        50664,
+        584,
+        264,
+        3669,
+        1349,
+        11,
+        293,
+        291,
+        584,
+        50764
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10689837485551834,
+      "compression_ratio": 1.5343915224075317,
+      "no_speech_prob": 0.018533973023295403
+    },
+    {
+      "id": 32,
+      "seek": 5596,
+      "start": 63.91999816894531,
+      "end": 66.08000183105469,
+      "text": " the Spanish word before I tell you.",
+      "tokens": [
+        50764,
+        264,
+        8058,
+        1349,
+        949,
+        286,
+        980,
+        291,
+        13,
+        50864
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10689837485551834,
+      "compression_ratio": 1.5343915224075317,
+      "no_speech_prob": 0.018533973023295403
+    },
+    {
+      "id": 33,
+      "seek": 5596,
+      "start": 66.87999725341797,
+      "end": 67.31999969482422,
+      "text": " Hello.",
+      "tokens": [
+        50864,
+        2425,
+        13,
+        50964
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10689837485551834,
+      "compression_ratio": 1.5343915224075317,
+      "no_speech_prob": 0.018533973023295403
+    },
+    {
+      "id": 34,
+      "seek": 5596,
+      "start": 67.80000305175781,
+      "end": 70.0199966430664,
+      "text": " Hola. Thank",
+      "tokens": [
+        50964,
+        22637,
+        13,
+        1044,
+        51064
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10689837485551834,
+      "compression_ratio": 1.5343915224075317,
+      "no_speech_prob": 0.018533973023295403
+    },
+    {
+      "id": 35,
+      "seek": 5596,
+      "start": 69.69999694824219,
+      "end": 71.72000122070312,
+      "text": " you. Gracias.",
+      "tokens": [
+        51064,
+        291,
+        13,
+        26909,
+        13,
+        51164
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10689837485551834,
+      "compression_ratio": 1.5343915224075317,
+      "no_speech_prob": 0.018533973023295403
+    },
+    {
+      "id": 36,
+      "seek": 5596,
+      "start": 72.23999786376953,
+      "end": 73.9800033569336,
+      "text": " The silence matters",
+      "tokens": [
+        51164,
+        440,
+        12239,
+        7001,
+        51264
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10689837485551834,
+      "compression_ratio": 1.5343915224075317,
+      "no_speech_prob": 0.018533973023295403
+    },
+    {
+      "id": 37,
+      "seek": 5596,
+      "start": 73.9800033569336,
+      "end": 76.30000305175781,
+      "text": " because the learner needs time to",
+      "tokens": [
+        51264,
+        570,
+        264,
+        33347,
+        2203,
+        565,
+        281,
+        51364
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10689837485551834,
+      "compression_ratio": 1.5343915224075317,
+      "no_speech_prob": 0.018533973023295403
+    },
+    {
+      "id": 38,
+      "seek": 5596,
+      "start": 76.30000305175781,
+      "end": 77.91999816894531,
+      "text": " speak. In a fitness",
+      "tokens": [
+        51364,
+        1710,
+        13,
+        682,
+        257,
+        15303,
+        51464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10689837485551834,
+      "compression_ratio": 1.5343915224075317,
+      "no_speech_prob": 0.018533973023295403
+    },
+    {
+      "id": 39,
+      "seek": 5596,
+      "start": 77.91999816894531,
+      "end": 79.27999877929688,
+      "text": " app, the coach says,",
+      "tokens": [
+        51464,
+        724,
+        11,
+        264,
+        6560,
+        1619,
+        11,
+        51564
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10689837485551834,
+      "compression_ratio": 1.5343915224075317,
+      "no_speech_prob": 0.018533973023295403
+    },
+    {
+      "id": 40,
+      "seek": 5596,
+      "start": 80.18000030517578,
+      "end": 81.4000015258789,
+      "text": " squat down and hold.",
+      "tokens": [
+        51564,
+        24305,
+        760,
+        293,
+        1797,
+        13,
+        51664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10689837485551834,
+      "compression_ratio": 1.5343915224075317,
+      "no_speech_prob": 0.018533973023295403
+    },
+    {
+      "id": 41,
+      "seek": 5596,
+      "start": 82.4000015258789,
+      "end": 83.05999755859375,
+      "text": " Stand up.",
+      "tokens": [
+        51664,
+        9133,
+        493,
+        13,
+        51764
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10689837485551834,
+      "compression_ratio": 1.5343915224075317,
+      "no_speech_prob": 0.018533973023295403
+    },
+    {
+      "id": 42,
+      "seek": 8306,
+      "start": 83.05999755859375,
+      "end": 85.33999633789062,
+      "text": " Step your right foot back",
+      "tokens": [
+        50364,
+        5470,
+        428,
+        558,
+        2671,
+        646,
+        50464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.11602353304624557,
+      "compression_ratio": 1.6335078477859497,
+      "no_speech_prob": 0.018817445263266563
+    },
+    {
+      "id": 43,
+      "seek": 8306,
+      "start": 85.33999633789062,
+      "end": 86.9800033569336,
+      "text": " into a lunge and hold",
+      "tokens": [
+        50464,
+        666,
+        257,
+        19039,
+        432,
+        293,
+        1797,
+        50564
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.11602353304624557,
+      "compression_ratio": 1.6335078477859497,
+      "no_speech_prob": 0.018817445263266563
+    },
+    {
+      "id": 44,
+      "seek": 8306,
+      "start": 86.73999786376953,
+      "end": 89.12000274658203,
+      "text": " there. Return to",
+      "tokens": [
+        50564,
+        456,
+        13,
+        24350,
+        281,
+        50664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.11602353304624557,
+      "compression_ratio": 1.6335078477859497,
+      "no_speech_prob": 0.018817445263266563
+    },
+    {
+      "id": 45,
+      "seek": 8306,
+      "start": 88.69999694824219,
+      "end": 91.22000122070312,
+      "text": " standing. In a breathing",
+      "tokens": [
+        50664,
+        4877,
+        13,
+        682,
+        257,
+        9570,
+        50764
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.11602353304624557,
+      "compression_ratio": 1.6335078477859497,
+      "no_speech_prob": 0.018817445263266563
+    },
+    {
+      "id": 46,
+      "seek": 8306,
+      "start": 91.22000122070312,
+      "end": 92.69999694824219,
+      "text": " app, the guide says,",
+      "tokens": [
+        50764,
+        724,
+        11,
+        264,
+        5934,
+        1619,
+        11,
+        50864
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.11602353304624557,
+      "compression_ratio": 1.6335078477859497,
+      "no_speech_prob": 0.018817445263266563
+    },
+    {
+      "id": 47,
+      "seek": 8306,
+      "start": 93.63999938964844,
+      "end": 94.62000274658203,
+      "text": " breathe in slowly.",
+      "tokens": [
+        50864,
+        10192,
+        294,
+        5692,
+        13,
+        50964
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.11602353304624557,
+      "compression_ratio": 1.6335078477859497,
+      "no_speech_prob": 0.018817445263266563
+    },
+    {
+      "id": 48,
+      "seek": 8306,
+      "start": 95.77999877929688,
+      "end": 96.55999755859375,
+      "text": " Hold your breath.",
+      "tokens": [
+        50964,
+        6962,
+        428,
+        6045,
+        13,
+        51064
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.11602353304624557,
+      "compression_ratio": 1.6335078477859497,
+      "no_speech_prob": 0.018817445263266563
+    },
+    {
+      "id": 49,
+      "seek": 8306,
+      "start": 97.9800033569336,
+      "end": 99.08000183105469,
+      "text": " Breathe out slowly.",
+      "tokens": [
+        51064,
+        36323,
+        484,
+        5692,
+        13,
+        51164
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.11602353304624557,
+      "compression_ratio": 1.6335078477859497,
+      "no_speech_prob": 0.018817445263266563
+    },
+    {
+      "id": 50,
+      "seek": 8306,
+      "start": 100.37999725341797,
+      "end": 101.16000366210938,
+      "text": " These instructions",
+      "tokens": [
+        51164,
+        1981,
+        9415,
+        51264
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.11602353304624557,
+      "compression_ratio": 1.6335078477859497,
+      "no_speech_prob": 0.018817445263266563
+    },
+    {
+      "id": 51,
+      "seek": 8306,
+      "start": 101.16000366210938,
+      "end": 103.0,
+      "text": " only work if the user has",
+      "tokens": [
+        51264,
+        787,
+        589,
+        498,
+        264,
+        4195,
+        575,
+        51364
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.11602353304624557,
+      "compression_ratio": 1.6335078477859497,
+      "no_speech_prob": 0.018817445263266563
+    },
+    {
+      "id": 52,
+      "seek": 8306,
+      "start": 103.0,
+      "end": 104.87999725341797,
+      "text": " time to move or breathe",
+      "tokens": [
+        51364,
+        565,
+        281,
+        1286,
+        420,
+        10192,
+        51464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.11602353304624557,
+      "compression_ratio": 1.6335078477859497,
+      "no_speech_prob": 0.018817445263266563
+    },
+    {
+      "id": 53,
+      "seek": 8306,
+      "start": 104.87999725341797,
+      "end": 106.5999984741211,
+      "text": " before hearing the next step.",
+      "tokens": [
+        51464,
+        949,
+        4763,
+        264,
+        958,
+        1823,
+        13,
+        51564
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.11602353304624557,
+      "compression_ratio": 1.6335078477859497,
+      "no_speech_prob": 0.018817445263266563
+    },
+    {
+      "id": 54,
+      "seek": 8306,
+      "start": 107.5,
+      "end": 109.23999786376953,
+      "text": " In a journaling app, the",
+      "tokens": [
+        51564,
+        682,
+        257,
+        17598,
+        4270,
+        724,
+        11,
+        264,
+        51664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.11602353304624557,
+      "compression_ratio": 1.6335078477859497,
+      "no_speech_prob": 0.018817445263266563
+    },
+    {
+      "id": 55,
+      "seek": 8306,
+      "start": 109.23999786376953,
+      "end": 111.05999755859375,
+      "text": " guide says, think of",
+      "tokens": [
+        51664,
+        5934,
+        1619,
+        11,
+        519,
+        295,
+        51764
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.11602353304624557,
+      "compression_ratio": 1.6335078477859497,
+      "no_speech_prob": 0.018817445263266563
+    },
+    {
+      "id": 56,
+      "seek": 11106,
+      "start": 111.05999755859375,
+      "end": 112.87999725341797,
+      "text": " one thing that made today",
+      "tokens": [
+        50364,
+        472,
+        551,
+        300,
+        1027,
+        965,
+        50464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10789518058300018,
+      "compression_ratio": 1.5340313911437988,
+      "no_speech_prob": 0.3103317320346832
+    },
+    {
+      "id": 57,
+      "seek": 11106,
+      "start": 112.77999877929688,
+      "end": 114.9000015258789,
+      "text": " difficult. Now",
+      "tokens": [
+        50464,
+        2252,
+        13,
+        823,
+        50564
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10789518058300018,
+      "compression_ratio": 1.5340313911437988,
+      "no_speech_prob": 0.3103317320346832
+    },
+    {
+      "id": 58,
+      "seek": 11106,
+      "start": 114.9000015258789,
+      "end": 116.95999908447266,
+      "text": " write one sentence about it.",
+      "tokens": [
+        50564,
+        2464,
+        472,
+        8174,
+        466,
+        309,
+        13,
+        50664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10789518058300018,
+      "compression_ratio": 1.5340313911437988,
+      "no_speech_prob": 0.3103317320346832
+    },
+    {
+      "id": 59,
+      "seek": 11106,
+      "start": 118.13999938964844,
+      "end": 119.05999755859375,
+      "text": " Think of one thing",
+      "tokens": [
+        50664,
+        6557,
+        295,
+        472,
+        551,
+        50764
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10789518058300018,
+      "compression_ratio": 1.5340313911437988,
+      "no_speech_prob": 0.3103317320346832
+    },
+    {
+      "id": 60,
+      "seek": 11106,
+      "start": 119.05999755859375,
+      "end": 120.83999633789062,
+      "text": " that helped you get through it.",
+      "tokens": [
+        50764,
+        300,
+        4254,
+        291,
+        483,
+        807,
+        309,
+        13,
+        50864
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10789518058300018,
+      "compression_ratio": 1.5340313911437988,
+      "no_speech_prob": 0.3103317320346832
+    },
+    {
+      "id": 61,
+      "seek": 11106,
+      "start": 121.77999877929688,
+      "end": 123.08000183105469,
+      "text": " Write that down too.",
+      "tokens": [
+        50864,
+        23499,
+        300,
+        760,
+        886,
+        13,
+        50964
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10789518058300018,
+      "compression_ratio": 1.5340313911437988,
+      "no_speech_prob": 0.3103317320346832
+    },
+    {
+      "id": 62,
+      "seek": 11106,
+      "start": 124.0999984741211,
+      "end": 125.16000366210938,
+      "text": " In a visual search",
+      "tokens": [
+        50964,
+        682,
+        257,
+        5056,
+        3164,
+        51064
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10789518058300018,
+      "compression_ratio": 1.5340313911437988,
+      "no_speech_prob": 0.3103317320346832
+    },
+    {
+      "id": 63,
+      "seek": 11106,
+      "start": 125.16000366210938,
+      "end": 126.55999755859375,
+      "text": " app, the voice says,",
+      "tokens": [
+        51064,
+        724,
+        11,
+        264,
+        3177,
+        1619,
+        11,
+        51164
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10789518058300018,
+      "compression_ratio": 1.5340313911437988,
+      "no_speech_prob": 0.3103317320346832
+    },
+    {
+      "id": 64,
+      "seek": 11106,
+      "start": 127.37999725341797,
+      "end": 128.89999389648438,
+      "text": " look at the picture and find",
+      "tokens": [
+        51164,
+        574,
+        412,
+        264,
+        3036,
+        293,
+        915,
+        51264
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10789518058300018,
+      "compression_ratio": 1.5340313911437988,
+      "no_speech_prob": 0.3103317320346832
+    },
+    {
+      "id": 65,
+      "seek": 11106,
+      "start": 128.89999389648438,
+      "end": 130.22000122070312,
+      "text": " the red triangle.",
+      "tokens": [
+        51264,
+        264,
+        2182,
+        13369,
+        13,
+        51364
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10789518058300018,
+      "compression_ratio": 1.5340313911437988,
+      "no_speech_prob": 0.3103317320346832
+    },
+    {
+      "id": 66,
+      "seek": 11106,
+      "start": 131.33999633789062,
+      "end": 132.25999450683594,
+      "text": " Now tap it.",
+      "tokens": [
+        51364,
+        823,
+        5119,
+        309,
+        13,
+        51464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10789518058300018,
+      "compression_ratio": 1.5340313911437988,
+      "no_speech_prob": 0.3103317320346832
+    },
+    {
+      "id": 67,
+      "seek": 11106,
+      "start": 133.4600067138672,
+      "end": 134.89999389648438,
+      "text": " Find the smallest circle.",
+      "tokens": [
+        51464,
+        11809,
+        264,
+        16998,
+        6329,
+        13,
+        51564
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10789518058300018,
+      "compression_ratio": 1.5340313911437988,
+      "no_speech_prob": 0.3103317320346832
+    },
+    {
+      "id": 68,
+      "seek": 11106,
+      "start": 136.0,
+      "end": 137.32000732421875,
+      "text": " Now tap that.",
+      "tokens": [
+        51564,
+        823,
+        5119,
+        300,
+        13,
+        51664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10789518058300018,
+      "compression_ratio": 1.5340313911437988,
+      "no_speech_prob": 0.3103317320346832
+    },
+    {
+      "id": 69,
+      "seek": 11106,
+      "start": 138.32000732421875,
+      "end": 139.05999755859375,
+      "text": " End of demo.",
+      "tokens": [
+        51664,
+        6967,
+        295,
+        10723,
+        13,
+        51764
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.10789518058300018,
+      "compression_ratio": 1.5340313911437988,
+      "no_speech_prob": 0.3103317320346832
+    },
+    {
+      "id": 70,
+      "seek": 13906,
+      "start": 139.05999755859375,
+      "end": 141.4600067138672,
+      "text": " The voice should pause",
+      "tokens": [
+        50364,
+        440,
+        3177,
+        820,
+        10465,
+        50464
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.09833827614784241,
+      "compression_ratio": 1.2395833730697632,
+      "no_speech_prob": 0.38096168637275696
+    },
+    {
+      "id": 71,
+      "seek": 13906,
+      "start": 141.4600067138672,
+      "end": 143.3000030517578,
+      "text": " whenever the user needs to think,",
+      "tokens": [
+        50464,
+        5699,
+        264,
+        4195,
+        2203,
+        281,
+        519,
+        11,
+        50564
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.09833827614784241,
+      "compression_ratio": 1.2395833730697632,
+      "no_speech_prob": 0.38096168637275696
+    },
+    {
+      "id": 72,
+      "seek": 13906,
+      "start": 144.27999877929688,
+      "end": 145.16000366210938,
+      "text": " answer, move,",
+      "tokens": [
+        50564,
+        1867,
+        11,
+        1286,
+        11,
+        50664
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.09833827614784241,
+      "compression_ratio": 1.2395833730697632,
+      "no_speech_prob": 0.38096168637275696
+    },
+    {
+      "id": 73,
+      "seek": 13906,
+      "start": 146.02000427246094,
+      "end": 146.8800048828125,
+      "text": " speak, write,",
+      "tokens": [
+        50664,
+        1710,
+        11,
+        2464,
+        11,
+        50764
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.09833827614784241,
+      "compression_ratio": 1.2395833730697632,
+      "no_speech_prob": 0.38096168637275696
+    },
+    {
+      "id": 74,
+      "seek": 13906,
+      "start": 147.8000030517578,
+      "end": 148.8800048828125,
+      "text": " search, choose,",
+      "tokens": [
+        50764,
+        3164,
+        11,
+        2826,
+        11,
+        50864
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.09833827614784241,
+      "compression_ratio": 1.2395833730697632,
+      "no_speech_prob": 0.38096168637275696
+    },
+    {
+      "id": 75,
+      "seek": 13906,
+      "start": 149.9199981689453,
+      "end": 151.13999938964844,
+      "text": " calculate, or act.",
+      "tokens": [
+        50864,
+        8873,
+        11,
+        420,
+        605,
+        13,
+        50964
+      ],
+      "temperature": 0.0,
+      "avg_logprob": -0.09833827614784241,
+      "compression_ratio": 1.2395833730697632,
+      "no_speech_prob": 0.38096168637275696
+    }
+  ],
+  "words": [
+    {
+      "word": "Welcome",
+      "start": 0.0,
+      "end": 0.41999998688697815
+    },
+    {
+      "word": "to",
+      "start": 0.41999998688697815,
+      "end": 0.5600000023841858
+    },
+    {
+      "word": "this",
+      "start": 0.5600000023841858,
+      "end": 0.8199999928474426
+    },
+    {
+      "word": "demo",
+      "start": 0.8199999928474426,
+      "end": 1.1200000047683716
+    },
+    {
+      "word": "In",
+      "start": 2.180000066757202,
+      "end": 2.259999990463257
+    },
+    {
+      "word": "some",
+      "start": 2.259999990463257,
+      "end": 2.5199999809265137
+    },
+    {
+      "word": "voice",
+      "start": 2.5199999809265137,
+      "end": 2.819999933242798
+    },
+    {
+      "word": "experiences",
+      "start": 2.819999933242798,
+      "end": 3.4800000190734863
+    },
+    {
+      "word": "silence",
+      "start": 4.300000190734863,
+      "end": 4.5
+    },
+    {
+      "word": "is",
+      "start": 4.5,
+      "end": 4.760000228881836
+    },
+    {
+      "word": "not",
+      "start": 4.760000228881836,
+      "end": 4.920000076293945
+    },
+    {
+      "word": "a",
+      "start": 4.920000076293945,
+      "end": 5.539999961853027
+    },
+    {
+      "word": "mistake",
+      "start": 5.539999961853027,
+      "end": 5.539999961853027
+    },
+    {
+      "word": "Silence",
+      "start": 6.940000057220459,
+      "end": 6.940000057220459
+    },
+    {
+      "word": "is",
+      "start": 6.940000057220459,
+      "end": 7.159999847412109
+    },
+    {
+      "word": "the",
+      "start": 7.159999847412109,
+      "end": 7.300000190734863
+    },
+    {
+      "word": "time",
+      "start": 7.300000190734863,
+      "end": 7.539999961853027
+    },
+    {
+      "word": "the",
+      "start": 7.539999961853027,
+      "end": 7.760000228881836
+    },
+    {
+      "word": "user",
+      "start": 7.760000228881836,
+      "end": 7.960000038146973
+    },
+    {
+      "word": "needs",
+      "start": 7.960000038146973,
+      "end": 8.220000267028809
+    },
+    {
+      "word": "to",
+      "start": 8.220000267028809,
+      "end": 8.520000457763672
+    },
+    {
+      "word": "do",
+      "start": 8.520000457763672,
+      "end": 8.640000343322754
+    },
+    {
+      "word": "the",
+      "start": 8.640000343322754,
+      "end": 8.899999618530273
+    },
+    {
+      "word": "thing",
+      "start": 8.899999618530273,
+      "end": 9.0600004196167
+    },
+    {
+      "word": "they",
+      "start": 9.0600004196167,
+      "end": 9.220000267028809
+    },
+    {
+      "word": "were",
+      "start": 9.220000267028809,
+      "end": 9.359999656677246
+    },
+    {
+      "word": "just",
+      "start": 9.359999656677246,
+      "end": 9.84000015258789
+    },
+    {
+      "word": "asked",
+      "start": 9.84000015258789,
+      "end": 9.84000015258789
+    },
+    {
+      "word": "to",
+      "start": 9.84000015258789,
+      "end": 10.15999984741211
+    },
+    {
+      "word": "do",
+      "start": 10.15999984741211,
+      "end": 10.399999618530273
+    },
+    {
+      "word": "If",
+      "start": 11.100000381469727,
+      "end": 11.5
+    },
+    {
+      "word": "the",
+      "start": 11.5,
+      "end": 11.84000015258789
+    },
+    {
+      "word": "voice",
+      "start": 11.84000015258789,
+      "end": 11.859999656677246
+    },
+    {
+      "word": "keeps",
+      "start": 11.859999656677246,
+      "end": 12.15999984741211
+    },
+    {
+      "word": "talking",
+      "start": 12.15999984741211,
+      "end": 12.579999923706055
+    },
+    {
+      "word": "too",
+      "start": 12.579999923706055,
+      "end": 12.9399995803833
+    },
+    {
+      "word": "quickly",
+      "start": 12.9399995803833,
+      "end": 13.220000267028809
+    },
+    {
+      "word": "the",
+      "start": 13.640000343322754,
+      "end": 13.84000015258789
+    },
+    {
+      "word": "task",
+      "start": 13.84000015258789,
+      "end": 14.119999885559082
+    },
+    {
+      "word": "becomes",
+      "start": 14.119999885559082,
+      "end": 14.520000457763672
+    },
+    {
+      "word": "impossible",
+      "start": 14.520000457763672,
+      "end": 15.15999984741211
+    },
+    {
+      "word": "In",
+      "start": 16.360000610351562,
+      "end": 16.5
+    },
+    {
+      "word": "a",
+      "start": 16.5,
+      "end": 16.8799991607666
+    },
+    {
+      "word": "math",
+      "start": 16.8799991607666,
+      "end": 16.920000076293945
+    },
+    {
+      "word": "learning",
+      "start": 16.920000076293945,
+      "end": 17.299999237060547
+    },
+    {
+      "word": "app",
+      "start": 17.299999237060547,
+      "end": 17.579999923706055
+    },
+    {
+      "word": "the",
+      "start": 17.84000015258789,
+      "end": 18.139999389648438
+    },
+    {
+      "word": "tutor",
+      "start": 18.139999389648438,
+      "end": 18.139999389648438
+    },
+    {
+      "word": "says",
+      "start": 17.979999542236328,
+      "end": 18.540000915527344
+    },
+    {
+      "word": "now",
+      "start": 19.200000762939453,
+      "end": 19.31999969482422
+    },
+    {
+      "word": "it's",
+      "start": 19.31999969482422,
+      "end": 19.479999542236328
+    },
+    {
+      "word": "your",
+      "start": 19.479999542236328,
+      "end": 19.760000228881836
+    },
+    {
+      "word": "turn",
+      "start": 19.760000228881836,
+      "end": 19.940000534057617
+    },
+    {
+      "word": "What",
+      "start": 20.520000457763672,
+      "end": 20.639999389648438
+    },
+    {
+      "word": "is",
+      "start": 20.639999389648438,
+      "end": 20.899999618530273
+    },
+    {
+      "word": "2",
+      "start": 20.899999618530273,
+      "end": 21.139999389648438
+    },
+    {
+      "word": "plus",
+      "start": 21.139999389648438,
+      "end": 21.440000534057617
+    },
+    {
+      "word": "3",
+      "start": 21.440000534057617,
+      "end": 21.84000015258789
+    },
+    {
+      "word": "The",
+      "start": 22.139999389648438,
+      "end": 22.700000762939453
+    },
+    {
+      "word": "answer",
+      "start": 22.700000762939453,
+      "end": 22.940000534057617
+    },
+    {
+      "word": "is",
+      "start": 22.940000534057617,
+      "end": 23.18000030517578
+    },
+    {
+      "word": "5",
+      "start": 23.18000030517578,
+      "end": 23.600000381469727
+    },
+    {
+      "word": "Then",
+      "start": 24.15999984741211,
+      "end": 24.719999313354492
+    },
+    {
+      "word": "the",
+      "start": 24.719999313354492,
+      "end": 25.079999923706055
+    },
+    {
+      "word": "tutor",
+      "start": 25.079999923706055,
+      "end": 25.079999923706055
+    },
+    {
+      "word": "says",
+      "start": 25.079999923706055,
+      "end": 25.5
+    },
+    {
+      "word": "try",
+      "start": 26.280000686645508,
+      "end": 26.299999237060547
+    },
+    {
+      "word": "another",
+      "start": 26.299999237060547,
+      "end": 26.579999923706055
+    },
+    {
+      "word": "one",
+      "start": 26.579999923706055,
+      "end": 26.920000076293945
+    },
+    {
+      "word": "You",
+      "start": 27.31999969482422,
+      "end": 27.639999389648438
+    },
+    {
+      "word": "have",
+      "start": 27.639999389648438,
+      "end": 27.8799991607666
+    },
+    {
+      "word": "6",
+      "start": 27.8799991607666,
+      "end": 28.15999984741211
+    },
+    {
+      "word": "apples",
+      "start": 28.15999984741211,
+      "end": 28.6200008392334
+    },
+    {
+      "word": "You",
+      "start": 28.959999084472656,
+      "end": 29.1200008392334
+    },
+    {
+      "word": "give",
+      "start": 29.1200008392334,
+      "end": 29.31999969482422
+    },
+    {
+      "word": "2",
+      "start": 29.31999969482422,
+      "end": 29.579999923706055
+    },
+    {
+      "word": "away",
+      "start": 29.579999923706055,
+      "end": 29.940000534057617
+    },
+    {
+      "word": "and",
+      "start": 30.0,
+      "end": 30.399999618530273
+    },
+    {
+      "word": "then",
+      "start": 30.399999618530273,
+      "end": 30.520000457763672
+    },
+    {
+      "word": "you",
+      "start": 30.520000457763672,
+      "end": 30.65999984741211
+    },
+    {
+      "word": "get",
+      "start": 30.65999984741211,
+      "end": 30.81999969482422
+    },
+    {
+      "word": "3",
+      "start": 30.81999969482422,
+      "end": 31.200000762939453
+    },
+    {
+      "word": "more",
+      "start": 31.200000762939453,
+      "end": 31.479999542236328
+    },
+    {
+      "word": "How",
+      "start": 32.220001220703125,
+      "end": 32.459999084472656
+    },
+    {
+      "word": "many",
+      "start": 32.459999084472656,
+      "end": 32.65999984741211
+    },
+    {
+      "word": "apples",
+      "start": 32.65999984741211,
+      "end": 32.939998626708984
+    },
+    {
+      "word": "do",
+      "start": 32.939998626708984,
+      "end": 33.13999938964844
+    },
+    {
+      "word": "you",
+      "start": 33.13999938964844,
+      "end": 33.2599983215332
+    },
+    {
+      "word": "have",
+      "start": 33.2599983215332,
+      "end": 33.47999954223633
+    },
+    {
+      "word": "now",
+      "start": 33.47999954223633,
+      "end": 33.880001068115234
+    },
+    {
+      "word": "You",
+      "start": 34.220001220703125,
+      "end": 34.900001525878906
+    },
+    {
+      "word": "have",
+      "start": 34.900001525878906,
+      "end": 35.119998931884766
+    },
+    {
+      "word": "7",
+      "start": 35.119998931884766,
+      "end": 35.52000045776367
+    },
+    {
+      "word": "apples",
+      "start": 35.52000045776367,
+      "end": 35.880001068115234
+    },
+    {
+      "word": "The",
+      "start": 37.18000030517578,
+      "end": 37.31999969482422
+    },
+    {
+      "word": "useful",
+      "start": 37.31999969482422,
+      "end": 37.7400016784668
+    },
+    {
+      "word": "moment",
+      "start": 37.7400016784668,
+      "end": 38.15999984741211
+    },
+    {
+      "word": "is",
+      "start": 38.15999984741211,
+      "end": 38.400001525878906
+    },
+    {
+      "word": "the",
+      "start": 38.400001525878906,
+      "end": 38.91999816894531
+    },
+    {
+      "word": "space",
+      "start": 38.91999816894531,
+      "end": 38.91999816894531
+    },
+    {
+      "word": "between",
+      "start": 38.91999816894531,
+      "end": 39.41999816894531
+    },
+    {
+      "word": "the",
+      "start": 39.41999816894531,
+      "end": 39.720001220703125
+    },
+    {
+      "word": "question",
+      "start": 39.720001220703125,
+      "end": 40.060001373291016
+    },
+    {
+      "word": "and",
+      "start": 40.060001373291016,
+      "end": 40.279998779296875
+    },
+    {
+      "word": "the",
+      "start": 40.279998779296875,
+      "end": 40.7599983215332
+    },
+    {
+      "word": "answer",
+      "start": 40.7599983215332,
+      "end": 40.7599983215332
+    },
+    {
+      "word": "because",
+      "start": 41.20000076293945,
+      "end": 41.380001068115234
+    },
+    {
+      "word": "the",
+      "start": 41.380001068115234,
+      "end": 41.65999984741211
+    },
+    {
+      "word": "learner",
+      "start": 41.65999984741211,
+      "end": 41.81999969482422
+    },
+    {
+      "word": "needs",
+      "start": 41.81999969482422,
+      "end": 42.119998931884766
+    },
+    {
+      "word": "time",
+      "start": 42.119998931884766,
+      "end": 42.459999084472656
+    },
+    {
+      "word": "to",
+      "start": 42.459999084472656,
+      "end": 43.20000076293945
+    },
+    {
+      "word": "calculate",
+      "start": 43.20000076293945,
+      "end": 43.20000076293945
+    },
+    {
+      "word": "In",
+      "start": 43.91999816894531,
+      "end": 44.400001525878906
+    },
+    {
+      "word": "a",
+      "start": 44.400001525878906,
+      "end": 44.91999816894531
+    },
+    {
+      "word": "language",
+      "start": 44.91999816894531,
+      "end": 44.939998626708984
+    },
+    {
+      "word": "learning",
+      "start": 44.939998626708984,
+      "end": 45.31999969482422
+    },
+    {
+      "word": "app",
+      "start": 45.31999969482422,
+      "end": 45.619998931884766
+    },
+    {
+      "word": "the",
+      "start": 45.7599983215332,
+      "end": 46.15999984741211
+    },
+    {
+      "word": "teacher",
+      "start": 46.15999984741211,
+      "end": 46.15999984741211
+    },
+    {
+      "word": "says",
+      "start": 46.15999984741211,
+      "end": 46.560001373291016
+    },
+    {
+      "word": "repeat",
+      "start": 47.220001220703125,
+      "end": 47.459999084472656
+    },
+    {
+      "word": "after",
+      "start": 47.459999084472656,
+      "end": 47.79999923706055
+    },
+    {
+      "word": "me",
+      "start": 47.79999923706055,
+      "end": 48.040000915527344
+    },
+    {
+      "word": "in",
+      "start": 48.040000915527344,
+      "end": 48.2400016784668
+    },
+    {
+      "word": "Spanish",
+      "start": 47.97999954223633,
+      "end": 48.65999984741211
+    },
+    {
+      "word": "Hello",
+      "start": 49.439998626708984,
+      "end": 49.880001068115234
+    },
+    {
+      "word": "Hola",
+      "start": 51.060001373291016,
+      "end": 51.060001373291016
+    },
+    {
+      "word": "Good",
+      "start": 52.040000915527344,
+      "end": 52.279998779296875
+    },
+    {
+      "word": "morning",
+      "start": 52.279998779296875,
+      "end": 52.58000183105469
+    },
+    {
+      "word": "Buenos",
+      "start": 53.599998474121094,
+      "end": 53.63999938964844
+    },
+    {
+      "word": "dias",
+      "start": 53.63999938964844,
+      "end": 54.040000915527344
+    },
+    {
+      "word": "Thank",
+      "start": 55.2400016784668,
+      "end": 55.540000915527344
+    },
+    {
+      "word": "you",
+      "start": 55.540000915527344,
+      "end": 55.959999084472656
+    },
+    {
+      "word": "Gracias",
+      "start": 55.959999084472656,
+      "end": 57.220001220703125
+    },
+    {
+      "word": "Then",
+      "start": 58.380001068115234,
+      "end": 58.439998626708984
+    },
+    {
+      "word": "the",
+      "start": 58.439998626708984,
+      "end": 58.7400016784668
+    },
+    {
+      "word": "teacher",
+      "start": 58.7400016784668,
+      "end": 58.880001068115234
+    },
+    {
+      "word": "changes",
+      "start": 58.880001068115234,
+      "end": 59.31999969482422
+    },
+    {
+      "word": "the",
+      "start": 59.31999969482422,
+      "end": 59.900001525878906
+    },
+    {
+      "word": "task",
+      "start": 59.900001525878906,
+      "end": 59.91999816894531
+    },
+    {
+      "word": "and",
+      "start": 59.91999816894531,
+      "end": 60.220001220703125
+    },
+    {
+      "word": "says",
+      "start": 60.220001220703125,
+      "end": 60.5
+    },
+    {
+      "word": "now",
+      "start": 61.52000045776367,
+      "end": 61.540000915527344
+    },
+    {
+      "word": "I'll",
+      "start": 61.540000915527344,
+      "end": 61.959999084472656
+    },
+    {
+      "word": "say",
+      "start": 61.959999084472656,
+      "end": 62.119998931884766
+    },
+    {
+      "word": "the",
+      "start": 62.119998931884766,
+      "end": 62.380001068115234
+    },
+    {
+      "word": "English",
+      "start": 62.380001068115234,
+      "end": 62.63999938964844
+    },
+    {
+      "word": "word",
+      "start": 62.63999938964844,
+      "end": 63.040000915527344
+    },
+    {
+      "word": "and",
+      "start": 63.2599983215332,
+      "end": 63.47999954223633
+    },
+    {
+      "word": "you",
+      "start": 63.47999954223633,
+      "end": 63.7400016784668
+    },
+    {
+      "word": "say",
+      "start": 63.7400016784668,
+      "end": 63.91999816894531
+    },
+    {
+      "word": "the",
+      "start": 63.91999816894531,
+      "end": 64.5
+    },
+    {
+      "word": "Spanish",
+      "start": 64.5,
+      "end": 64.5
+    },
+    {
+      "word": "word",
+      "start": 64.5,
+      "end": 64.9000015258789
+    },
+    {
+      "word": "before",
+      "start": 64.9000015258789,
+      "end": 65.19999694824219
+    },
+    {
+      "word": "I",
+      "start": 65.19999694824219,
+      "end": 65.4800033569336
+    },
+    {
+      "word": "tell",
+      "start": 65.4800033569336,
+      "end": 65.66000366210938
+    },
+    {
+      "word": "you",
+      "start": 65.66000366210938,
+      "end": 66.08000183105469
+    },
+    {
+      "word": "Hello",
+      "start": 66.87999725341797,
+      "end": 67.31999969482422
+    },
+    {
+      "word": "Hola",
+      "start": 67.80000305175781,
+      "end": 68.5999984741211
+    },
+    {
+      "word": "Thank",
+      "start": 69.83999633789062,
+      "end": 70.0199966430664
+    },
+    {
+      "word": "you",
+      "start": 69.69999694824219,
+      "end": 70.5
+    },
+    {
+      "word": "Gracias",
+      "start": 71.36000061035156,
+      "end": 71.72000122070312
+    },
+    {
+      "word": "The",
+      "start": 72.23999786376953,
+      "end": 73.0199966430664
+    },
+    {
+      "word": "silence",
+      "start": 73.0199966430664,
+      "end": 73.4800033569336
+    },
+    {
+      "word": "matters",
+      "start": 73.4800033569336,
+      "end": 73.9800033569336
+    },
+    {
+      "word": "because",
+      "start": 73.9800033569336,
+      "end": 74.37999725341797
+    },
+    {
+      "word": "the",
+      "start": 74.37999725341797,
+      "end": 74.87999725341797
+    },
+    {
+      "word": "learner",
+      "start": 74.87999725341797,
+      "end": 74.87999725341797
+    },
+    {
+      "word": "needs",
+      "start": 74.87999725341797,
+      "end": 75.19999694824219
+    },
+    {
+      "word": "time",
+      "start": 75.19999694824219,
+      "end": 75.62000274658203
+    },
+    {
+      "word": "to",
+      "start": 75.62000274658203,
+      "end": 76.30000305175781
+    },
+    {
+      "word": "speak",
+      "start": 76.30000305175781,
+      "end": 76.30000305175781
+    },
+    {
+      "word": "In",
+      "start": 77.33999633789062,
+      "end": 77.44000244140625
+    },
+    {
+      "word": "a",
+      "start": 77.44000244140625,
+      "end": 77.91999816894531
+    },
+    {
+      "word": "fitness",
+      "start": 77.91999816894531,
+      "end": 77.91999816894531
+    },
+    {
+      "word": "app",
+      "start": 77.91999816894531,
+      "end": 78.31999969482422
+    },
+    {
+      "word": "the",
+      "start": 78.4800033569336,
+      "end": 78.83999633789062
+    },
+    {
+      "word": "coach",
+      "start": 78.83999633789062,
+      "end": 78.83999633789062
+    },
+    {
+      "word": "says",
+      "start": 78.83999633789062,
+      "end": 79.27999877929688
+    },
+    {
+      "word": "squat",
+      "start": 80.18000030517578,
+      "end": 80.22000122070312
+    },
+    {
+      "word": "down",
+      "start": 80.22000122070312,
+      "end": 80.62000274658203
+    },
+    {
+      "word": "and",
+      "start": 80.62000274658203,
+      "end": 81.04000091552734
+    },
+    {
+      "word": "hold",
+      "start": 81.04000091552734,
+      "end": 81.4000015258789
+    },
+    {
+      "word": "Stand",
+      "start": 82.4000015258789,
+      "end": 82.66000366210938
+    },
+    {
+      "word": "up",
+      "start": 82.66000366210938,
+      "end": 83.05999755859375
+    },
+    {
+      "word": "Step",
+      "start": 83.05999755859375,
+      "end": 84.12000274658203
+    },
+    {
+      "word": "your",
+      "start": 84.12000274658203,
+      "end": 84.37999725341797
+    },
+    {
+      "word": "right",
+      "start": 84.37999725341797,
+      "end": 84.69999694824219
+    },
+    {
+      "word": "foot",
+      "start": 84.69999694824219,
+      "end": 84.94000244140625
+    },
+    {
+      "word": "back",
+      "start": 84.94000244140625,
+      "end": 85.33999633789062
+    },
+    {
+      "word": "into",
+      "start": 85.33999633789062,
+      "end": 85.63999938964844
+    },
+    {
+      "word": "a",
+      "start": 85.63999938964844,
+      "end": 86.22000122070312
+    },
+    {
+      "word": "lunge",
+      "start": 86.22000122070312,
+      "end": 86.30000305175781
+    },
+    {
+      "word": "and",
+      "start": 86.30000305175781,
+      "end": 86.73999786376953
+    },
+    {
+      "word": "hold",
+      "start": 86.73999786376953,
+      "end": 86.9800033569336
+    },
+    {
+      "word": "there",
+      "start": 86.73999786376953,
+      "end": 87.5199966430664
+    },
+    {
+      "word": "Return",
+      "start": 88.68000030517578,
+      "end": 88.68000030517578
+    },
+    {
+      "word": "to",
+      "start": 88.68000030517578,
+      "end": 89.12000274658203
+    },
+    {
+      "word": "standing",
+      "start": 88.69999694824219,
+      "end": 89.4800033569336
+    },
+    {
+      "word": "In",
+      "start": 90.76000213623047,
+      "end": 90.76000213623047
+    },
+    {
+      "word": "a",
+      "start": 90.76000213623047,
+      "end": 91.05999755859375
+    },
+    {
+      "word": "breathing",
+      "start": 91.05999755859375,
+      "end": 91.22000122070312
+    },
+    {
+      "word": "app",
+      "start": 91.22000122070312,
+      "end": 91.5999984741211
+    },
+    {
+      "word": "the",
+      "start": 91.86000061035156,
+      "end": 91.9800033569336
+    },
+    {
+      "word": "guide",
+      "start": 91.9800033569336,
+      "end": 92.19999694824219
+    },
+    {
+      "word": "says",
+      "start": 92.19999694824219,
+      "end": 92.69999694824219
+    },
+    {
+      "word": "breathe",
+      "start": 93.63999938964844,
+      "end": 93.66000366210938
+    },
+    {
+      "word": "in",
+      "start": 93.66000366210938,
+      "end": 94.12000274658203
+    },
+    {
+      "word": "slowly",
+      "start": 94.12000274658203,
+      "end": 94.62000274658203
+    },
+    {
+      "word": "Hold",
+      "start": 95.77999877929688,
+      "end": 95.81999969482422
+    },
+    {
+      "word": "your",
+      "start": 95.81999969482422,
+      "end": 96.55999755859375
+    },
+    {
+      "word": "breath",
+      "start": 96.55999755859375,
+      "end": 96.55999755859375
+    },
+    {
+      "word": "Breathe",
+      "start": 97.9800033569336,
+      "end": 97.9800033569336
+    },
+    {
+      "word": "out",
+      "start": 97.9800033569336,
+      "end": 98.62000274658203
+    },
+    {
+      "word": "slowly",
+      "start": 98.62000274658203,
+      "end": 99.08000183105469
+    },
+    {
+      "word": "These",
+      "start": 100.37999725341797,
+      "end": 100.5999984741211
+    },
+    {
+      "word": "instructions",
+      "start": 100.5999984741211,
+      "end": 101.16000366210938
+    },
+    {
+      "word": "only",
+      "start": 101.16000366210938,
+      "end": 101.81999969482422
+    },
+    {
+      "word": "work",
+      "start": 101.81999969482422,
+      "end": 102.12000274658203
+    },
+    {
+      "word": "if",
+      "start": 102.12000274658203,
+      "end": 102.30000305175781
+    },
+    {
+      "word": "the",
+      "start": 102.30000305175781,
+      "end": 102.72000122070312
+    },
+    {
+      "word": "user",
+      "start": 102.72000122070312,
+      "end": 102.72000122070312
+    },
+    {
+      "word": "has",
+      "start": 102.72000122070312,
+      "end": 103.0
+    },
+    {
+      "word": "time",
+      "start": 103.0,
+      "end": 103.4000015258789
+    },
+    {
+      "word": "to",
+      "start": 103.4000015258789,
+      "end": 104.0
+    },
+    {
+      "word": "move",
+      "start": 104.0,
+      "end": 104.04000091552734
+    },
+    {
+      "word": "or",
+      "start": 104.04000091552734,
+      "end": 104.5199966430664
+    },
+    {
+      "word": "breathe",
+      "start": 104.5199966430664,
+      "end": 104.87999725341797
+    },
+    {
+      "word": "before",
+      "start": 104.87999725341797,
+      "end": 105.36000061035156
+    },
+    {
+      "word": "hearing",
+      "start": 105.36000061035156,
+      "end": 105.66000366210938
+    },
+    {
+      "word": "the",
+      "start": 105.66000366210938,
+      "end": 105.95999908447266
+    },
+    {
+      "word": "next",
+      "start": 105.95999908447266,
+      "end": 106.27999877929688
+    },
+    {
+      "word": "step",
+      "start": 106.27999877929688,
+      "end": 106.5999984741211
+    },
+    {
+      "word": "In",
+      "start": 107.5,
+      "end": 107.76000213623047
+    },
+    {
+      "word": "a",
+      "start": 107.76000213623047,
+      "end": 108.26000213623047
+    },
+    {
+      "word": "journaling",
+      "start": 108.26000213623047,
+      "end": 108.30000305175781
+    },
+    {
+      "word": "app",
+      "start": 108.30000305175781,
+      "end": 108.73999786376953
+    },
+    {
+      "word": "the",
+      "start": 108.81999969482422,
+      "end": 109.23999786376953
+    },
+    {
+      "word": "guide",
+      "start": 109.23999786376953,
+      "end": 109.33999633789062
+    },
+    {
+      "word": "says",
+      "start": 109.33999633789062,
+      "end": 109.77999877929688
+    },
+    {
+      "word": "think",
+      "start": 110.72000122070312,
+      "end": 110.77999877929688
+    },
+    {
+      "word": "of",
+      "start": 110.77999877929688,
+      "end": 111.05999755859375
+    },
+    {
+      "word": "one",
+      "start": 111.05999755859375,
+      "end": 111.27999877929688
+    },
+    {
+      "word": "thing",
+      "start": 111.27999877929688,
+      "end": 111.72000122070312
+    },
+    {
+      "word": "that",
+      "start": 111.72000122070312,
+      "end": 111.95999908447266
+    },
+    {
+      "word": "made",
+      "start": 111.95999908447266,
+      "end": 112.30000305175781
+    },
+    {
+      "word": "today",
+      "start": 112.30000305175781,
+      "end": 112.87999725341797
+    },
+    {
+      "word": "difficult",
+      "start": 112.77999877929688,
+      "end": 113.54000091552734
+    },
+    {
+      "word": "Now",
+      "start": 114.54000091552734,
+      "end": 114.9000015258789
+    },
+    {
+      "word": "write",
+      "start": 114.9000015258789,
+      "end": 115.33999633789062
+    },
+    {
+      "word": "one",
+      "start": 115.33999633789062,
+      "end": 115.9000015258789
+    },
+    {
+      "word": "sentence",
+      "start": 115.9000015258789,
+      "end": 116.27999877929688
+    },
+    {
+      "word": "about",
+      "start": 116.27999877929688,
+      "end": 116.62000274658203
+    },
+    {
+      "word": "it",
+      "start": 116.62000274658203,
+      "end": 116.95999908447266
+    },
+    {
+      "word": "Think",
+      "start": 118.13999938964844,
+      "end": 118.16000366210938
+    },
+    {
+      "word": "of",
+      "start": 118.16000366210938,
+      "end": 118.41999816894531
+    },
+    {
+      "word": "one",
+      "start": 118.41999816894531,
+      "end": 118.83999633789062
+    },
+    {
+      "word": "thing",
+      "start": 118.83999633789062,
+      "end": 119.05999755859375
+    },
+    {
+      "word": "that",
+      "start": 119.05999755859375,
+      "end": 119.36000061035156
+    },
+    {
+      "word": "helped",
+      "start": 119.36000061035156,
+      "end": 119.63999938964844
+    },
+    {
+      "word": "you",
+      "start": 119.63999938964844,
+      "end": 119.95999908447266
+    },
+    {
+      "word": "get",
+      "start": 119.95999908447266,
+      "end": 120.18000030517578
+    },
+    {
+      "word": "through",
+      "start": 120.18000030517578,
+      "end": 120.44000244140625
+    },
+    {
+      "word": "it",
+      "start": 120.44000244140625,
+      "end": 120.83999633789062
+    },
+    {
+      "word": "Write",
+      "start": 121.77999877929688,
+      "end": 121.77999877929688
+    },
+    {
+      "word": "that",
+      "start": 121.77999877929688,
+      "end": 122.16000366210938
+    },
+    {
+      "word": "down",
+      "start": 122.16000366210938,
+      "end": 122.5
+    },
+    {
+      "word": "too",
+      "start": 122.5,
+      "end": 123.08000183105469
+    },
+    {
+      "word": "In",
+      "start": 124.0999984741211,
+      "end": 124.16000366210938
+    },
+    {
+      "word": "a",
+      "start": 124.16000366210938,
+      "end": 124.37999725341797
+    },
+    {
+      "word": "visual",
+      "start": 124.37999725341797,
+      "end": 124.76000213623047
+    },
+    {
+      "word": "search",
+      "start": 124.76000213623047,
+      "end": 125.16000366210938
+    },
+    {
+      "word": "app",
+      "start": 125.16000366210938,
+      "end": 125.5999984741211
+    },
+    {
+      "word": "the",
+      "start": 125.76000213623047,
+      "end": 125.94000244140625
+    },
+    {
+      "word": "voice",
+      "start": 125.94000244140625,
+      "end": 126.13999938964844
+    },
+    {
+      "word": "says",
+      "start": 126.13999938964844,
+      "end": 126.55999755859375
+    },
+    {
+      "word": "look",
+      "start": 127.37999725341797,
+      "end": 127.37999725341797
+    },
+    {
+      "word": "at",
+      "start": 127.37999725341797,
+      "end": 127.5199966430664
+    },
+    {
+      "word": "the",
+      "start": 127.5199966430664,
+      "end": 128.0800018310547
+    },
+    {
+      "word": "picture",
+      "start": 128.0800018310547,
+      "end": 128.0800018310547
+    },
+    {
+      "word": "and",
+      "start": 128.0800018310547,
+      "end": 128.60000610351562
+    },
+    {
+      "word": "find",
+      "start": 128.60000610351562,
+      "end": 128.89999389648438
+    },
+    {
+      "word": "the",
+      "start": 128.89999389648438,
+      "end": 129.32000732421875
+    },
+    {
+      "word": "red",
+      "start": 129.32000732421875,
+      "end": 129.6199951171875
+    },
+    {
+      "word": "triangle",
+      "start": 129.6199951171875,
+      "end": 130.22000122070312
+    },
+    {
+      "word": "Now",
+      "start": 131.33999633789062,
+      "end": 131.5800018310547
+    },
+    {
+      "word": "tap",
+      "start": 131.5800018310547,
+      "end": 131.89999389648438
+    },
+    {
+      "word": "it",
+      "start": 131.89999389648438,
+      "end": 132.25999450683594
+    },
+    {
+      "word": "Find",
+      "start": 133.4600067138672,
+      "end": 133.4600067138672
+    },
+    {
+      "word": "the",
+      "start": 133.4600067138672,
+      "end": 134.39999389648438
+    },
+    {
+      "word": "smallest",
+      "start": 134.39999389648438,
+      "end": 134.39999389648438
+    },
+    {
+      "word": "circle",
+      "start": 134.39999389648438,
+      "end": 134.89999389648438
+    },
+    {
+      "word": "Now",
+      "start": 136.0,
+      "end": 136.24000549316406
+    },
+    {
+      "word": "tap",
+      "start": 136.24000549316406,
+      "end": 136.67999267578125
+    },
+    {
+      "word": "that",
+      "start": 136.67999267578125,
+      "end": 137.32000732421875
+    },
+    {
+      "word": "End",
+      "start": 138.32000732421875,
+      "end": 138.52000427246094
+    },
+    {
+      "word": "of",
+      "start": 138.52000427246094,
+      "end": 138.74000549316406
+    },
+    {
+      "word": "demo",
+      "start": 138.74000549316406,
+      "end": 139.05999755859375
+    },
+    {
+      "word": "The",
+      "start": 139.05999755859375,
+      "end": 140.32000732421875
+    },
+    {
+      "word": "voice",
+      "start": 140.32000732421875,
+      "end": 140.6199951171875
+    },
+    {
+      "word": "should",
+      "start": 140.6199951171875,
+      "end": 140.97999572753906
+    },
+    {
+      "word": "pause",
+      "start": 140.97999572753906,
+      "end": 141.4600067138672
+    },
+    {
+      "word": "whenever",
+      "start": 141.4600067138672,
+      "end": 141.83999633789062
+    },
+    {
+      "word": "the",
+      "start": 141.83999633789062,
+      "end": 142.10000610351562
+    },
+    {
+      "word": "user",
+      "start": 142.10000610351562,
+      "end": 142.33999633789062
+    },
+    {
+      "word": "needs",
+      "start": 142.33999633789062,
+      "end": 142.66000366210938
+    },
+    {
+      "word": "to",
+      "start": 142.66000366210938,
+      "end": 142.97999572753906
+    },
+    {
+      "word": "think",
+      "start": 142.97999572753906,
+      "end": 143.3000030517578
+    },
+    {
+      "word": "answer",
+      "start": 144.27999877929688,
+      "end": 144.27999877929688
+    },
+    {
+      "word": "move",
+      "start": 145.16000366210938,
+      "end": 145.16000366210938
+    },
+    {
+      "word": "speak",
+      "start": 146.02000427246094,
+      "end": 146.02000427246094
+    },
+    {
+      "word": "write",
+      "start": 146.8000030517578,
+      "end": 146.8800048828125
+    },
+    {
+      "word": "search",
+      "start": 147.8000030517578,
+      "end": 147.8000030517578
+    },
+    {
+      "word": "choose",
+      "start": 148.8800048828125,
+      "end": 148.8800048828125
+    },
+    {
+      "word": "calculate",
+      "start": 149.9199981689453,
+      "end": 149.9199981689453
+    },
+    {
+      "word": "or",
+      "start": 150.02000427246094,
+      "end": 151.13999938964844
+    },
+    {
+      "word": "act",
+      "start": 151.13999938964844,
+      "end": 151.13999938964844
+    }
+  ],
+  "usage": {
+    "type": "duration",
+    "seconds": 152
+  }
+}
