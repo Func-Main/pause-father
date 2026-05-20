@@ -227,6 +227,7 @@ export function TranscriptEditor({
         pendingTranscriptionBlob,
       })
     : null;
+  const hasActivityFeedItems = Boolean(workflowProgress || workflowNotice);
 
   useEffect(() => {
     let isCancelled = false;
@@ -1367,6 +1368,11 @@ export function TranscriptEditor({
               <RotateCcw className="size-4" />
               Reset everything
             </Button>
+            {hasActivityFeedItems ? (
+              <h2 className="px-1 pt-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Activity feed
+              </h2>
+            ) : null}
             {workflowProgress ? (
               <WorkflowProgressPanel progress={workflowProgress} />
             ) : null}
@@ -2053,7 +2059,7 @@ function GapHandle({
           pause
             ? "border-orange-500/70 bg-orange-100 text-orange-950"
             : hasNaturalGapHandle
-              ? "border-orange-300/60 bg-orange-50/70 hover:border-orange-500/60 hover:bg-orange-100/80"
+              ? "border-muted-foreground/25 bg-muted/70 hover:border-muted-foreground/45 hover:bg-muted"
               : "border-transparent bg-transparent hover:border-border hover:bg-muted",
         ].join(" ")}
         style={{ width }}
