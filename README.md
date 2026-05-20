@@ -2,6 +2,18 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+Create `.env.local` with the existing Clerk/Stripe values plus these values if
+you want per-user provider key storage:
+
+```bash
+DATABASE_URL="postgresql://..."
+KEY_ENCRYPTION_SECRET="generate-a-long-random-secret"
+```
+
+The app creates the `user_provider_keys` table on first use. The same schema is
+also available at `db/migrations/001_user_provider_keys.sql` if you prefer to
+run migrations explicitly in Neon.
+
 First, run the development server:
 
 ```bash

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useUser, UserButton } from "@clerk/nextjs";
@@ -10,6 +10,7 @@ import {
   Clock3,
   Download,
   FileText,
+  KeyRound,
   LoaderCircle,
   MousePointer2,
   Pause,
@@ -22,6 +23,7 @@ import {
   Timer,
   Trash2,
   Upload,
+  X,
 } from "lucide-react";
 import {
   formatDuration,
@@ -40,6 +42,11 @@ import {
   createBillingPortalSession,
   createCheckoutSession,
 } from "@/app/actions/billing";
+import {
+  refreshProviderKeyStatuses,
+  removeProviderApiKey,
+  saveProviderApiKey,
+} from "@/app/actions/provider-keys";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -57,6 +64,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { UserEntitlement } from "@/lib/billing/entitlements";
+import type {
+  ApiKeyProvider,
+  ProviderKeyStatus,
+} from "@/lib/user-provider-keys/types";
 import { cn } from "@/lib/utils";
 
 const transcript = sampleTranscript as Transcript;
@@ -81,8 +92,10 @@ const ACTIVE_WORD_GRACE_SECONDS = 0.08;
 
 export function TranscriptEditor({
   entitlement,
+  providerKeyStatuses,
 }: {
   entitlement: UserEntitlement;
+  providerKeyStatuses: ProviderKeyStatus[];
 }) {
   const [pauses, setPauses] = useState<AutoPause[]>(modelPauses);
   const [selectedWordIndex, setSelectedWordIndex] = useState<number | null>(null);
@@ -93,6 +106,8 @@ export function TranscriptEditor({
   const [isPlaying, setIsPlaying] = useState(false);
   const [isExportGateOpen, setIsExportGateOpen] = useState(false);
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [keyStatuses, setKeyStatuses] = useState(providerKeyStatuses);
   const [hasTweakedGaps, setHasTweakedGaps] = useState(false);
   const { isSignedIn } = useUser();
   const [currentTime, setCurrentTime] = useState(0);
@@ -162,6 +177,12 @@ export function TranscriptEditor({
   const exportLimitSeconds = entitlement.exportLimitSeconds;
   const isExportLimited =
     typeof exportLimitSeconds === "number" && !entitlement.isPaid;
+  const hasElevenLabsKey = keyStatuses.some(
+    (status) => status.provider === "elevenlabs" && status.hasKey,
+  );
+  const hasOpenAiKey = keyStatuses.some(
+    (status) => status.provider === "openai" && status.hasKey,
+  );
 
   useEffect(() => {
     let isCancelled = false;
@@ -543,7 +564,17 @@ export function TranscriptEditor({
                 </form>
               ) : null}
               {isSignedIn ? (
-                <UserButton />
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsSettingsOpen(true)}
+                  >
+                    <KeyRound className="size-4" />
+                    API keys
+                  </Button>
+                  <UserButton />
+                </>
               ) : (
                 <Link
                   href="/sign-in"
@@ -676,9 +707,20 @@ export function TranscriptEditor({
                 step="1"
                 icon={Upload}
                 label="Upload audio"
-                description={loadedAudioFileName ?? "Choose your own file"}
-                actionLabel={loadedAudioFileName ? "Change" : "Choose"}
+                description={
+                  hasElevenLabsKey
+                    ? loadedAudioFileName ?? "Choose your own file"
+                    : "Needs ElevenLabs API key"
+                }
+                actionLabel={
+                  hasElevenLabsKey
+                    ? loadedAudioFileName
+                      ? "Change"
+                      : "Choose"
+                    : "Locked"
+                }
                 complete={Boolean(loadedAudioFileName)}
+                disabled={!hasElevenLabsKey}
                 onClick={openUploadPicker}
               />
               <WorkflowStep
@@ -686,14 +728,22 @@ export function TranscriptEditor({
                 icon={Sparkles}
                 label="Auto time"
                 description={
-                  sortedPauses.length > 0
+                  !hasOpenAiKey
+                    ? "Needs OpenAI API key"
+                    : sortedPauses.length > 0
                     ? `${sortedPauses.length} pauses suggested`
                     : "Place natural pauses automatically"
                 }
-                actionLabel={sortedPauses.length > 0 ? "Rerun" : "Run"}
+                actionLabel={
+                  hasOpenAiKey
+                    ? sortedPauses.length > 0
+                      ? "Rerun"
+                      : "Run"
+                    : "Locked"
+                }
                 complete={sortedPauses.length > 0}
                 primary={primaryWorkflowStep === "auto"}
-                disabled={!loadedAudioFileName}
+                disabled={!hasOpenAiKey || !loadedAudioFileName}
                 onClick={applyAutoTiming}
               />
               <WorkflowStep
@@ -829,7 +879,212 @@ export function TranscriptEditor({
           onConfirm={resetWorkspace}
         />
       ) : null}
+      {isSettingsOpen ? (
+        <ProviderSettingsDialog
+          statuses={keyStatuses}
+          onClose={() => setIsSettingsOpen(false)}
+          onStatusesChange={setKeyStatuses}
+        />
+      ) : null}
     </main>
+  );
+}
+
+function ProviderSettingsDialog({
+  statuses,
+  onClose,
+  onStatusesChange,
+}: {
+  statuses: ProviderKeyStatus[];
+  onClose: () => void;
+  onStatusesChange: (statuses: ProviderKeyStatus[]) => void;
+}) {
+  const [openAiKey, setOpenAiKey] = useState("");
+  const [elevenLabsKey, setElevenLabsKey] = useState("");
+  const [message, setMessage] = useState<string | null>(null);
+  const [pendingProvider, setPendingProvider] = useState<ApiKeyProvider | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const statusByProvider = useMemo(
+    () => new Map(statuses.map((status) => [status.provider, status])),
+    [statuses],
+  );
+
+  function handleSave(provider: ApiKeyProvider, apiKey: string) {
+    setPendingProvider(provider);
+    setMessage(null);
+    startTransition(async () => {
+      const result = await saveProviderApiKey(provider, apiKey);
+      setMessage(result.message);
+
+      if (result.ok) {
+        onStatusesChange(await refreshProviderKeyStatuses());
+        if (provider === "openai") {
+          setOpenAiKey("");
+        } else {
+          setElevenLabsKey("");
+        }
+      }
+
+      setPendingProvider(null);
+    });
+  }
+
+  function handleDelete(provider: ApiKeyProvider) {
+    setPendingProvider(provider);
+    setMessage(null);
+    startTransition(async () => {
+      const result = await removeProviderApiKey(provider);
+      setMessage(result.message);
+
+      if (result.ok) {
+        onStatusesChange(await refreshProviderKeyStatuses());
+      }
+
+      setPendingProvider(null);
+    });
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 px-4 backdrop-blur-sm">
+      <div
+        className="w-full max-w-lg rounded-md border bg-card p-5 text-card-foreground shadow-xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="provider-settings-title"
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-1">
+            <h2 id="provider-settings-title" className="text-lg font-semibold">
+              API key settings
+            </h2>
+            <p className="text-sm leading-6 text-muted-foreground">
+              Keys are encrypted before storage and only used from server code.
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            aria-label="Close settings"
+          >
+            <X className="size-4" />
+          </Button>
+        </div>
+
+        <div className="mt-5 space-y-4">
+          <ProviderKeyForm
+            provider="openai"
+            label="OpenAI"
+            placeholder="sk-..."
+            value={openAiKey}
+            status={statusByProvider.get("openai")}
+            disabled={isPending}
+            isPending={isPending && pendingProvider === "openai"}
+            onChange={setOpenAiKey}
+            onDelete={() => handleDelete("openai")}
+            onSave={() => handleSave("openai", openAiKey)}
+          />
+          <ProviderKeyForm
+            provider="elevenlabs"
+            label="ElevenLabs"
+            placeholder="Paste ElevenLabs API key"
+            value={elevenLabsKey}
+            status={statusByProvider.get("elevenlabs")}
+            disabled={isPending}
+            isPending={isPending && pendingProvider === "elevenlabs"}
+            onChange={setElevenLabsKey}
+            onDelete={() => handleDelete("elevenlabs")}
+            onSave={() => handleSave("elevenlabs", elevenLabsKey)}
+          />
+        </div>
+
+        {message ? (
+          <div className="mt-4 rounded-md border bg-muted/30 px-3 py-2 text-sm text-muted-foreground">
+            {message}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function ProviderKeyForm({
+  label,
+  placeholder,
+  value,
+  status,
+  disabled,
+  isPending,
+  onChange,
+  onDelete,
+  onSave,
+}: {
+  provider: ApiKeyProvider;
+  label: string;
+  placeholder: string;
+  value: string;
+  status?: ProviderKeyStatus;
+  disabled: boolean;
+  isPending: boolean;
+  onChange: (value: string) => void;
+  onDelete: () => void;
+  onSave: () => void;
+}) {
+  return (
+    <section className="rounded-md border p-3">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <div>
+          <h3 className="text-sm font-medium">{label}</h3>
+          <p className="text-xs text-muted-foreground">
+            {status?.hasKey
+              ? `Saved as ${status.keyHint ?? "encrypted key"}`
+              : "No key saved"}
+          </p>
+        </div>
+        {status?.hasKey ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={disabled}
+            onClick={onDelete}
+          >
+            <Trash2 className="size-3.5" />
+            Remove
+          </Button>
+        ) : null}
+      </div>
+
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <Label className="sr-only" htmlFor={`${label}-api-key`}>
+          {label} API key
+        </Label>
+        <Input
+          id={`${label}-api-key`}
+          type="password"
+          autoComplete="off"
+          spellCheck={false}
+          placeholder={placeholder}
+          value={value}
+          disabled={disabled}
+          onChange={(event) => onChange(event.currentTarget.value)}
+        />
+        <Button
+          type="button"
+          className="shrink-0"
+          disabled={disabled || value.trim().length === 0}
+          onClick={onSave}
+        >
+          {isPending ? (
+            <LoaderCircle className="size-4 animate-spin" />
+          ) : (
+            <Check className="size-4" />
+          )}
+          Save
+        </Button>
+      </div>
+    </section>
   );
 }
 
