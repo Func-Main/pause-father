@@ -70,8 +70,8 @@ import type {
 } from "@/lib/user-provider-keys/types";
 import { cn } from "@/lib/utils";
 
-const transcript = sampleTranscript as Transcript;
-const modelPauses = (samplePausePlan as { pauses: AutoPause[] }).pauses.map(
+const demoTranscript = sampleTranscript as Transcript;
+const demoModelPauses = (samplePausePlan as { pauses: AutoPause[] }).pauses.map(
   (pause) => ({ ...pause, source: "model" as const }),
 );
 
@@ -97,7 +97,8 @@ export function TranscriptEditor({
   entitlement: UserEntitlement;
   providerKeyStatuses: ProviderKeyStatus[];
 }) {
-  const [pauses, setPauses] = useState<AutoPause[]>(modelPauses);
+  const [transcript, setTranscript] = useState<Transcript>(demoTranscript);
+  const [pauses, setPauses] = useState<AutoPause[]>(demoModelPauses);
   const [selectedWordIndex, setSelectedWordIndex] = useState<number | null>(null);
   const [sourceAudioUrl, setSourceAudioUrl] = useState(ORIGINAL_AUDIO_URL);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
@@ -107,11 +108,14 @@ export function TranscriptEditor({
   const [isExportGateOpen, setIsExportGateOpen] = useState(false);
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [isAutoTiming, setIsAutoTiming] = useState(false);
+  const [workflowMessage, setWorkflowMessage] = useState<string | null>(null);
   const [keyStatuses, setKeyStatuses] = useState(providerKeyStatuses);
   const [hasTweakedGaps, setHasTweakedGaps] = useState(false);
   const { isSignedIn } = useUser();
   const [currentTime, setCurrentTime] = useState(0);
-  const [audioDuration, setAudioDuration] = useState(Number(transcript.duration ?? 0));
+  const [audioDuration, setAudioDuration] = useState(Number(demoTranscript.duration ?? 0));
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
   const originalAudioRef = useRef<AudioBuffer | null>(null);
   const unlockMessageAudioRef = useRef<AudioBuffer | null>(null);
@@ -150,7 +154,7 @@ export function TranscriptEditor({
         : "tweak";
   const retimedTranscript = useMemo(
     () => retimeTranscript(transcript, sortedPauses),
-    [sortedPauses],
+    [sortedPauses, transcript],
   );
   const selectedPause =
     selectedWordIndex === null
@@ -288,17 +292,52 @@ export function TranscriptEditor({
     };
   }, [isPlaying]);
 
-  function applyAutoTiming() {
+  async function applyAutoTiming() {
     setHasTweakedGaps(false);
-    setPauses(modelPauses);
     setSelectedWordIndex(null);
+
+    if (isDemoContentLoaded) {
+      setPauses(demoModelPauses);
+      return;
+    }
+
+    setIsAutoTiming(true);
+    setWorkflowMessage(null);
+
+    try {
+      const response = await fetch("/api/pause-plan", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ transcript }),
+      });
+      const body = (await response.json()) as {
+        pauses?: AutoPause[];
+        error?: string;
+      };
+
+      if (!response.ok || !Array.isArray(body.pauses)) {
+        throw new Error(body.error ?? "Auto timing failed.");
+      }
+
+      setPauses(body.pauses);
+    } catch (error) {
+      setWorkflowMessage(
+        error instanceof Error
+          ? error.message
+          : "Auto timing failed. Check your OpenAI key and try again.",
+      );
+    } finally {
+      setIsAutoTiming(false);
+    }
   }
 
   function openUploadPicker() {
     uploadInputRef.current?.click();
   }
 
-  function uploadAudio(file: File | undefined) {
+  async function uploadAudio(file: File | undefined) {
     if (!file) {
       return;
     }
@@ -318,12 +357,43 @@ export function TranscriptEditor({
     setSourceAudioUrl(nextUrl);
     setUploadedFileName(file.name);
     setAudioUrl(nextUrl);
+    setTranscript(emptyTranscript(file.name));
     setAudioDuration(0);
     setCurrentTime(0);
     setIsPlaying(false);
     setPreviewSignature("");
     setHasTweakedGaps(false);
+    setWorkflowMessage(null);
+    setIsTranscribing(true);
     clearTiming();
+
+    try {
+      const formData = new FormData();
+      formData.set("file", file);
+      const response = await fetch("/api/transcribe", {
+        method: "POST",
+        body: formData,
+      });
+      const body = (await response.json()) as {
+        transcript?: Transcript;
+        error?: string;
+      };
+
+      if (!response.ok || !body.transcript) {
+        throw new Error(body.error ?? "Transcription failed.");
+      }
+
+      setTranscript(body.transcript);
+      setAudioDuration(Number(body.transcript.duration ?? 0));
+    } catch (error) {
+      setWorkflowMessage(
+        error instanceof Error
+          ? error.message
+          : "Transcription failed. Check your ElevenLabs key and try again.",
+      );
+    } finally {
+      setIsTranscribing(false);
+    }
   }
 
   function clearTiming() {
@@ -350,11 +420,15 @@ export function TranscriptEditor({
     setSourceAudioUrl(ORIGINAL_AUDIO_URL);
     setUploadedFileName(null);
     setAudioUrl(ORIGINAL_AUDIO_URL);
-    setAudioDuration(Number(transcript.duration ?? 0));
+    setTranscript(demoTranscript);
+    setAudioDuration(Number(demoTranscript.duration ?? 0));
     setCurrentTime(0);
     setIsPlaying(false);
     setPreviewSignature("");
-    applyAutoTiming();
+    setWorkflowMessage(null);
+    setHasTweakedGaps(false);
+    setPauses(demoModelPauses);
+    setSelectedWordIndex(null);
   }
 
   function resetWorkspace() {
@@ -364,12 +438,14 @@ export function TranscriptEditor({
     setSourceAudioUrl("");
     setUploadedFileName(null);
     setAudioUrl("");
+    setTranscript(demoTranscript);
     setAudioDuration(0);
     setCurrentTime(0);
     setIsPlaying(false);
     setPreviewSignature("");
     setIsExportGateOpen(false);
     setIsResetConfirmOpen(false);
+    setWorkflowMessage(null);
     clearTiming();
   }
 
@@ -709,18 +785,22 @@ export function TranscriptEditor({
                 label="Upload audio"
                 description={
                   hasElevenLabsKey
-                    ? loadedAudioFileName ?? "Choose your own file"
+                    ? isTranscribing
+                      ? "Transcribing with ElevenLabs"
+                      : loadedAudioFileName ?? "Choose your own file"
                     : "Needs ElevenLabs API key"
                 }
                 actionLabel={
                   hasElevenLabsKey
-                    ? loadedAudioFileName
+                    ? isTranscribing
+                      ? "Working"
+                      : loadedAudioFileName
                       ? "Change"
                       : "Choose"
                     : "Locked"
                 }
                 complete={Boolean(loadedAudioFileName)}
-                disabled={!hasElevenLabsKey}
+                disabled={!hasElevenLabsKey || isTranscribing || isAutoTiming}
                 onClick={openUploadPicker}
               />
               <WorkflowStep
@@ -730,20 +810,32 @@ export function TranscriptEditor({
                 description={
                   !hasOpenAiKey
                     ? "Needs OpenAI API key"
+                    : isAutoTiming
+                      ? "Finding pause points with OpenAI"
+                    : isTranscribing
+                      ? "Transcribe audio first"
                     : sortedPauses.length > 0
                     ? `${sortedPauses.length} pauses suggested`
                     : "Place natural pauses automatically"
                 }
                 actionLabel={
                   hasOpenAiKey
-                    ? sortedPauses.length > 0
+                    ? isAutoTiming
+                      ? "Working"
+                      : sortedPauses.length > 0
                       ? "Rerun"
                       : "Run"
                     : "Locked"
                 }
                 complete={sortedPauses.length > 0}
                 primary={primaryWorkflowStep === "auto"}
-                disabled={!hasOpenAiKey || !loadedAudioFileName}
+                disabled={
+                  !hasOpenAiKey ||
+                  !loadedAudioFileName ||
+                  isTranscribing ||
+                  isAutoTiming ||
+                  transcript.words.length === 0
+                }
                 onClick={applyAutoTiming}
               />
               <WorkflowStep
@@ -770,10 +862,20 @@ export function TranscriptEditor({
                     : "Render your finished audio"
                 }
                 actionLabel={previewState === "rendering" ? "Rendering" : "Export"}
-                disabled={previewState === "rendering" || !loadedAudioFileName}
+                disabled={
+                  previewState === "rendering" ||
+                  !loadedAudioFileName ||
+                  isTranscribing ||
+                  isAutoTiming
+                }
                 onClick={downloadCurrentAudio}
               />
             </div>
+            {workflowMessage ? (
+              <div className="rounded-md border border-destructive/25 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+                {workflowMessage}
+              </div>
+            ) : null}
             {selectedWordIndex !== null ? (
               <Card className="animate-in fade-in-0 slide-in-from-right-2 rounded-md duration-200">
                 <CardHeader className="border-b py-3">
@@ -958,7 +1060,8 @@ function ProviderSettingsDialog({
               API key settings
             </h2>
             <p className="text-sm leading-6 text-muted-foreground">
-              Keys are encrypted before storage and only used from server code.
+              Keys are encrypted before storage. Because this is a quick hack
+              project, set sensible limits on your keys and use carefully.
             </p>
           </div>
           <Button
@@ -974,20 +1077,9 @@ function ProviderSettingsDialog({
 
         <div className="mt-5 space-y-4">
           <ProviderKeyForm
-            provider="openai"
-            label="OpenAI"
-            placeholder="sk-..."
-            value={openAiKey}
-            status={statusByProvider.get("openai")}
-            disabled={isPending}
-            isPending={isPending && pendingProvider === "openai"}
-            onChange={setOpenAiKey}
-            onDelete={() => handleDelete("openai")}
-            onSave={() => handleSave("openai", openAiKey)}
-          />
-          <ProviderKeyForm
             provider="elevenlabs"
             label="ElevenLabs"
+            description="Used for speech-to-text only. Only STT permission is needed."
             placeholder="Paste ElevenLabs API key"
             value={elevenLabsKey}
             status={statusByProvider.get("elevenlabs")}
@@ -996,6 +1088,19 @@ function ProviderSettingsDialog({
             onChange={setElevenLabsKey}
             onDelete={() => handleDelete("elevenlabs")}
             onSave={() => handleSave("elevenlabs", elevenLabsKey)}
+          />
+          <ProviderKeyForm
+            provider="openai"
+            label="OpenAI"
+            description="Used to auto-detect where to insert pauses into the audio."
+            placeholder="sk-..."
+            value={openAiKey}
+            status={statusByProvider.get("openai")}
+            disabled={isPending}
+            isPending={isPending && pendingProvider === "openai"}
+            onChange={setOpenAiKey}
+            onDelete={() => handleDelete("openai")}
+            onSave={() => handleSave("openai", openAiKey)}
           />
         </div>
 
@@ -1011,6 +1116,7 @@ function ProviderSettingsDialog({
 
 function ProviderKeyForm({
   label,
+  description,
   placeholder,
   value,
   status,
@@ -1022,6 +1128,7 @@ function ProviderKeyForm({
 }: {
   provider: ApiKeyProvider;
   label: string;
+  description: string;
   placeholder: string;
   value: string;
   status?: ProviderKeyStatus;
@@ -1036,6 +1143,9 @@ function ProviderKeyForm({
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
           <h3 className="text-sm font-medium">{label}</h3>
+          <p className="text-xs leading-5 text-muted-foreground">
+            {description}
+          </p>
           <p className="text-xs text-muted-foreground">
             {status?.hasKey
               ? `Saved as ${status.keyHint ?? "encrypted key"}`
@@ -1056,34 +1166,36 @@ function ProviderKeyForm({
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <Label className="sr-only" htmlFor={`${label}-api-key`}>
-          {label} API key
-        </Label>
-        <Input
-          id={`${label}-api-key`}
-          type="password"
-          autoComplete="off"
-          spellCheck={false}
-          placeholder={placeholder}
-          value={value}
-          disabled={disabled}
-          onChange={(event) => onChange(event.currentTarget.value)}
-        />
-        <Button
-          type="button"
-          className="shrink-0"
-          disabled={disabled || value.trim().length === 0}
-          onClick={onSave}
-        >
-          {isPending ? (
-            <LoaderCircle className="size-4 animate-spin" />
-          ) : (
-            <Check className="size-4" />
-          )}
-          Save
-        </Button>
-      </div>
+      {!status?.hasKey ? (
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Label className="sr-only" htmlFor={`${label}-api-key`}>
+            {label} API key
+          </Label>
+          <Input
+            id={`${label}-api-key`}
+            type="password"
+            autoComplete="off"
+            spellCheck={false}
+            placeholder={placeholder}
+            value={value}
+            disabled={disabled}
+            onChange={(event) => onChange(event.currentTarget.value)}
+          />
+          <Button
+            type="button"
+            className="shrink-0"
+            disabled={disabled || value.trim().length === 0}
+            onClick={onSave}
+          >
+            {isPending ? (
+              <LoaderCircle className="size-4 animate-spin" />
+            ) : (
+              <Check className="size-4" />
+            )}
+            Save
+          </Button>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -1626,6 +1738,17 @@ function isEditableKeyboardTarget(target: EventTarget | null): boolean {
       'input, textarea, select, [contenteditable="true"], [contenteditable=""]',
     ),
   );
+}
+
+function emptyTranscript(fileName: string): Transcript {
+  return {
+    task: "transcribe",
+    source: "pending-upload",
+    text: fileName,
+    duration: 0,
+    segments: [],
+    words: [],
+  };
 }
 
 function clampDuration(durationMs: number): number {
