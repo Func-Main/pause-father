@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import type { DragEvent } from "react";
 import type { LucideIcon } from "lucide-react";
-import { SignInButton, SignUpButton, useUser, UserButton } from "@clerk/nextjs";
+import { useUser, UserButton } from "@clerk/nextjs";
 import { upload as uploadBlob } from "@vercel/blob/client";
 import {
   AudioLines,
@@ -51,6 +51,7 @@ import {
   removeProviderApiKey,
   saveProviderApiKey,
 } from "@/app/actions/provider-keys";
+import { AuthDialogButton } from "@/components/auth/auth-dialog-button";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -953,11 +954,9 @@ export function TranscriptEditor({
                   <UserButton />
                 </>
               ) : (
-                <SignInButton mode="modal">
-                  <Button type="button" variant="outline">
-                    Sign in
-                  </Button>
-                </SignInButton>
+                <AuthDialogButton mode="sign-in" variant="outline">
+                  Sign in
+                </AuthDialogButton>
               )}
             </div>
           </div>
@@ -1845,16 +1844,16 @@ function ExportGate({
             </form>
           ) : (
             <>
-              <SignUpButton mode="modal">
-                <Button type="button" className="w-full">
-                  Create account to unlock
-                </Button>
-              </SignUpButton>
-              <SignInButton mode="modal">
-                <Button type="button" variant="outline" className="w-full">
-                  Sign in
-                </Button>
-              </SignInButton>
+              <AuthDialogButton mode="sign-up" className="w-full">
+                Create account to unlock
+              </AuthDialogButton>
+              <AuthDialogButton
+                mode="sign-in"
+                variant="outline"
+                className="w-full"
+              >
+                Sign in
+              </AuthDialogButton>
             </>
           )}
 
