@@ -2,7 +2,7 @@ import { clerkMiddleware } from "@clerk/nextjs/server";
 
 export default clerkMiddleware({
   frontendApiProxy: {
-    enabled: true,
+    enabled: (url) => !["localhost", "127.0.0.1", "::1"].includes(url.hostname),
   },
 });
 

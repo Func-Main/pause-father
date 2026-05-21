@@ -11,6 +11,7 @@ import {
   AlertCircle,
   Check,
   Clock3,
+  Coffee,
   Crown,
   Download,
   Code2,
@@ -106,6 +107,10 @@ const ACTIVE_WORD_GRACE_SECONDS = 0.08;
 const AUDIO_UPLOAD_MODE = process.env.NEXT_PUBLIC_AUDIO_UPLOAD_MODE ?? "blob";
 const SESSION_DRAFT_STORAGE_KEY = "pausefather:last-session:v1";
 
+type PauseDurationEditOptions = {
+  commit?: boolean;
+};
+
 export function TranscriptEditor({
   entitlement,
   providerKeyStatuses,
@@ -135,6 +140,7 @@ export function TranscriptEditor({
   } | null>(null);
   const [keyStatuses, setKeyStatuses] = useState(providerKeyStatuses);
   const [hasTweakedGaps, setHasTweakedGaps] = useState(false);
+  const [isPauseDragActive, setIsPauseDragActive] = useState(false);
   const { isSignedIn } = useUser();
   const [currentTime, setCurrentTime] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
@@ -147,6 +153,8 @@ export function TranscriptEditor({
   const previewObjectUrlRef = useRef<string | null>(null);
   const pendingSeekTimeRef = useRef<number | null>(null);
   const manualEditIdRef = useRef(0);
+  const setPauseDurationRef = useRef(setPauseDuration);
+  const togglePlaybackRef = useRef(togglePlayback);
   const animationFrameRef = useRef<number | null>(null);
 
   const sortedPauses = useMemo(() => sortPauses(pauses), [pauses]);
@@ -164,6 +172,10 @@ export function TranscriptEditor({
   const previewState =
     sortedPauses.length === 0
       ? "original"
+      : isPauseDragActive
+        ? previewSignature
+          ? "ready"
+          : "original"
       : previewSignature === pauseSignature
         ? "ready"
         : "rendering";
@@ -317,6 +329,10 @@ export function TranscriptEditor({
   ]);
 
   useEffect(() => {
+    if (isPauseDragActive) {
+      return;
+    }
+
     let isCancelled = false;
     const timeout = window.setTimeout(async () => {
       if (previewObjectUrlRef.current) {
@@ -354,7 +370,7 @@ export function TranscriptEditor({
       isCancelled = true;
       window.clearTimeout(timeout);
     };
-  }, [pauseSignature, sortedPauses, sourceAudioUrl]);
+  }, [isPauseDragActive, pauseSignature, sortedPauses, sourceAudioUrl]);
 
   useEffect(() => {
     return () => {
@@ -371,22 +387,45 @@ export function TranscriptEditor({
   }, []);
 
   useEffect(() => {
+    setPauseDurationRef.current = setPauseDuration;
+    togglePlaybackRef.current = togglePlayback;
+  });
+
+  useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
+      if (event.code === "Space") {
+        event.preventDefault();
+        togglePlaybackRef.current();
+        return;
+      }
+
       if (
         !selectedPause ||
-        (event.key !== "Delete" && event.key !== "Backspace") ||
+        selectedWordIndex === null ||
         isEditableKeyboardTarget(event.target)
       ) {
         return;
       }
 
-      event.preventDefault();
-      setHasTweakedGaps(true);
-      setPauses((currentPauses) =>
-        currentPauses.filter(
-          (pause) => pause.after_word_index !== selectedWordIndex,
-        ),
-      );
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        event.preventDefault();
+        const direction = event.key === "ArrowRight" ? 1 : -1;
+        setPauseDurationRef.current(
+          selectedWordIndex,
+          selectedPause.duration_ms + direction * 100,
+        );
+        return;
+      }
+
+      if (event.key === "Delete" || event.key === "Backspace") {
+        event.preventDefault();
+        setHasTweakedGaps(true);
+        setPauses((currentPauses) =>
+          currentPauses.filter(
+            (pause) => pause.after_word_index !== selectedWordIndex,
+          ),
+        );
+      }
     }
 
     window.addEventListener("keydown", handleKeyDown);
@@ -710,7 +749,7 @@ export function TranscriptEditor({
     setWorkflowMessage(null);
     setPendingTranscriptionBlob(null);
     setHasTweakedGaps(false);
-    setPauses(freshDemoModelPauses());
+    setPauses([]);
     setSelectedWordIndex(null);
   }
 
@@ -736,10 +775,15 @@ export function TranscriptEditor({
     clearTiming();
   }
 
-  function setPauseDuration(afterWordIndex: number, durationMs: number) {
+  function setPauseDuration(
+    afterWordIndex: number,
+    durationMs: number,
+    options: PauseDurationEditOptions = {},
+  ) {
     setHasTweakedGaps(true);
     const editId = manualEditIdRef.current + 1;
     manualEditIdRef.current = editId;
+    const shouldCommit = options.commit ?? true;
     const clampedDuration = clampDuration(durationMs);
     setPauses((currentPauses) =>
       upsertManualPause(
@@ -751,7 +795,7 @@ export function TranscriptEditor({
     );
     setSelectedWordIndex(afterWordIndex);
 
-    if (clampedDuration <= 0) {
+    if (!shouldCommit || clampedDuration <= 0) {
       return;
     }
 
@@ -1117,6 +1161,8 @@ export function TranscriptEditor({
                       activeWordIndex={activeWordIndex}
                       selectedWordIndex={selectedWordIndex}
                       onSelectWord={selectWordAndSeek}
+                      onPauseDragStart={() => setIsPauseDragActive(true)}
+                      onPauseDragEnd={() => setIsPauseDragActive(false)}
                       onSetPauseDuration={setPauseDuration}
                     />
                   </div>
@@ -1215,7 +1261,9 @@ export function TranscriptEditor({
                 label="Auto time"
                 description={
                   isDemoContentLoaded
-                    ? "Uses bundled demo timing"
+                    ? sortedPauses.length > 0
+                      ? "Uses bundled demo timing"
+                      : "Run bundled demo timing"
                     : !hasOpenAiKey
                       ? "Needs OpenAI API key"
                       : isAutoTiming
@@ -1805,12 +1853,17 @@ function ExportGate({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 px-4 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-md border bg-card p-5 text-card-foreground shadow-xl">
         <div className="flex items-start justify-between gap-4">
-          <div className="space-y-1">
-            <h2 className="text-lg font-semibold">Unlock full export</h2>
-            <p className="text-sm leading-6 text-muted-foreground">
-              The Pausefather is giftware. Create an account and unlock
-              full-length exports with a minimum $1 payment.
-            </p>
+          <div className="flex items-start gap-3">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-md border bg-muted text-muted-foreground">
+              <Coffee className="size-4" />
+            </div>
+            <div className="space-y-1">
+              <h2 className="text-lg font-semibold">Unlock full export</h2>
+              <p className="text-sm leading-6 text-muted-foreground">
+                The Pausefather is giftware. Create an account and unlock
+                full-length exports with a minimum $1 payment.
+              </p>
+            </div>
           </div>
           <Button
             type="button"
@@ -1843,9 +1896,13 @@ function ExportGate({
                   min="1"
                   step="0.5"
                   defaultValue="1"
+                  required
                 />
               </div>
-              <Button type="submit">Unlock</Button>
+              <Button type="submit">
+                <Coffee className="size-4" />
+                Unlock
+              </Button>
             </form>
           ) : (
             <>
@@ -1875,6 +1932,8 @@ function TranscriptWords({
   selectedWordIndex,
   words,
   onSelectWord,
+  onPauseDragStart,
+  onPauseDragEnd,
   onSetPauseDuration,
 }: {
   activeWordIndex: number | null;
@@ -1883,7 +1942,13 @@ function TranscriptWords({
   selectedWordIndex: number | null;
   words: Transcript["words"];
   onSelectWord: (index: number) => void;
-  onSetPauseDuration: (index: number, durationMs: number) => void;
+  onPauseDragStart: () => void;
+  onPauseDragEnd: () => void;
+  onSetPauseDuration: (
+    index: number,
+    durationMs: number,
+    options?: PauseDurationEditOptions,
+  ) => void;
 }) {
   return (
     <div className="flex flex-wrap items-center gap-y-4 text-lg leading-10">
@@ -1918,6 +1983,8 @@ function TranscriptWords({
               naturalGapMs={naturalGapMs}
               pause={pause}
               onSelectWord={onSelectWord}
+              onPauseDragStart={onPauseDragStart}
+              onPauseDragEnd={onPauseDragEnd}
               onSetPauseDuration={onSetPauseDuration}
             />
           </span>
@@ -2036,6 +2103,8 @@ function GapHandle({
   naturalGapMs,
   pause,
   onSelectWord,
+  onPauseDragStart,
+  onPauseDragEnd,
   onSetPauseDuration,
 }: {
   activeProgress: number;
@@ -2043,7 +2112,13 @@ function GapHandle({
   naturalGapMs: number;
   pause?: AutoPause;
   onSelectWord: (index: number) => void;
-  onSetPauseDuration: (index: number, durationMs: number) => void;
+  onPauseDragStart: () => void;
+  onPauseDragEnd: () => void;
+  onSetPauseDuration: (
+    index: number,
+    durationMs: number,
+    options?: PauseDurationEditOptions,
+  ) => void;
 }) {
   const hasNaturalGapHandle = !pause && naturalGapMs >= NATURAL_GAP_HANDLE_THRESHOLD_MS;
   const width = gapWidthForMs(naturalGapMs, pause?.duration_ms ?? 0);
@@ -2064,23 +2139,63 @@ function GapHandle({
         style={{ width }}
         onClick={() => onSelectWord(index)}
         onPointerDown={(event) => {
-          const startX = event.clientX;
-          const baseDuration = pause?.duration_ms ?? 0;
-          event.currentTarget.setPointerCapture(event.pointerId);
-
-          function handlePointerMove(moveEvent: PointerEvent) {
-            const nextDuration =
-              baseDuration + (moveEvent.clientX - startX) * DRAG_MS_PER_PIXEL;
-            onSetPauseDuration(index, nextDuration);
+          if (event.button !== 0) {
+            return;
           }
 
-          function handlePointerUp() {
+          const startX = event.clientX;
+          const baseDuration = pause?.duration_ms ?? 0;
+          const handle = event.currentTarget;
+          const pointerId = event.pointerId;
+          let isDragging = true;
+          let currentDuration = baseDuration;
+
+          handle.setPointerCapture(pointerId);
+          onPauseDragStart();
+
+          function durationFromPointer(clientX: number) {
+            return baseDuration + (clientX - startX) * DRAG_MS_PER_PIXEL;
+          }
+
+          function handlePointerMove(moveEvent: PointerEvent) {
+            if (moveEvent.pointerId !== pointerId) {
+              return;
+            }
+
+            currentDuration = durationFromPointer(moveEvent.clientX);
+            onSetPauseDuration(index, currentDuration, { commit: false });
+          }
+
+          function stopDrag(event?: PointerEvent) {
+            if (!isDragging) {
+              return;
+            }
+            if (event && event.pointerId !== pointerId) {
+              return;
+            }
+
+            isDragging = false;
+            if (event?.type === "pointerup") {
+              currentDuration = durationFromPointer(event.clientX);
+            }
+
             window.removeEventListener("pointermove", handlePointerMove);
-            window.removeEventListener("pointerup", handlePointerUp);
+            window.removeEventListener("pointerup", stopDrag);
+            window.removeEventListener("pointercancel", stopDrag);
+            handle.removeEventListener("lostpointercapture", stopDrag);
+
+            if (handle.hasPointerCapture(pointerId)) {
+              handle.releasePointerCapture(pointerId);
+            }
+
+            onSetPauseDuration(index, currentDuration, { commit: true });
+            onPauseDragEnd();
           }
 
           window.addEventListener("pointermove", handlePointerMove);
-          window.addEventListener("pointerup", handlePointerUp);
+          window.addEventListener("pointerup", stopDrag);
+          window.addEventListener("pointercancel", stopDrag);
+          handle.addEventListener("lostpointercapture", stopDrag);
         }}
         aria-label={
           pause
