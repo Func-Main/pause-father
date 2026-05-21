@@ -972,6 +972,12 @@ export function TranscriptEditor({
             </div>
             <div className="flex flex-wrap items-center gap-2">
               {entitlement.isPaid ? (
+                <div className="inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-sm font-medium text-amber-700">
+                  <Crown className="size-4" />
+                  Premium
+                </div>
+              ) : null}
+              {entitlement.isPaid ? (
                 <form action={createBillingPortalSession}>
                   <Button type="submit" variant="outline">
                     <Settings className="size-4" />
@@ -989,12 +995,6 @@ export function TranscriptEditor({
                     <KeyRound className="size-4" />
                     API keys
                   </Button>
-                  {entitlement.isPaid ? (
-                    <div className="inline-flex h-9 items-center gap-1.5 rounded-md px-2 text-sm font-medium text-amber-700">
-                      <Crown className="size-4" />
-                      Premium
-                    </div>
-                  ) : null}
                   <UserButton />
                 </>
               ) : (
