@@ -1,4 +1,19 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+![Pause Father](public/pause-father.png)
+
+# The Pausefather
+
+The Pausefather fixes a real problem in voice AI: voices are great at speaking,
+but bad at leaving space for people to think, answer, move, write, search,
+choose, calculate, or act.
+
+It turns silence from dead air into an intentional design layer.
+
+Creators can reshape the timing of spoken experiences so listeners have room to
+actually do what the voice asks.
+
+Built for the ElevenLabs V3 workflow and monetized with Stripe, it is both a
+production technique for real voice products and a focused tool people can pay
+for when timing matters.
 
 ## Getting Started
 
